@@ -4,6 +4,7 @@ import '../../application/common/application_ports.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../overview/overview_page.dart';
+import '../records/records_page.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({
@@ -27,18 +28,31 @@ class HomeShell extends StatefulWidget {
 
 class _HomeShellState extends State<HomeShell> {
   var _index = 0;
+  var _overviewRefreshKey = 0;
 
   @override
   Widget build(BuildContext context) {
     final pages = [
       OverviewPage(
+        key: ValueKey('overview-$_overviewRefreshKey'),
         transactions: widget.transactions,
         settings: widget.settings,
         clock: widget.clock,
         idGenerator: widget.idGenerator,
         initialDate: widget.initialDate ?? DateTime.now(),
       ),
-      const Center(child: Text('紀錄')),
+      RecordsPage(
+        transactions: widget.transactions,
+        settings: widget.settings,
+        clock: widget.clock,
+        idGenerator: widget.idGenerator,
+        initialDate: widget.initialDate ?? DateTime.now(),
+        onRecordsChanged: () {
+          setState(() {
+            _overviewRefreshKey += 1;
+          });
+        },
+      ),
       const Center(child: Text('設定')),
     ];
 
