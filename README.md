@@ -1,17 +1,20 @@
 # networthy
 
-A new Flutter project.
+Offline-first Flutter bookkeeping app.
 
-## Getting Started
+## Local development
 
-This project is a starting point for a Flutter application.
+Use suppressed Flutter analytics in this sandboxed environment:
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+FLUTTER_SUPPRESS_ANALYTICS=true flutter analyze
+FLUTTER_SUPPRESS_ANALYTICS=true flutter test
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+If CocoaPods is installed but fails because the shell points `GEM_HOME` or
+`GEM_PATH` at stale Ruby gem directories, run iOS commands with those variables
+removed:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+env -u GEM_HOME -u GEM_PATH FLUTTER_SUPPRESS_ANALYTICS=true flutter run -d <ios-device-id>
+```
