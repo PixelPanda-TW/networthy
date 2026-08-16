@@ -6,15 +6,15 @@ import 'package:networthy/domain/repository/transaction_repository.dart';
 import 'package:networthy/domain/summary/monthly_summary.dart';
 
 class TestClock implements ApplicationClock {
-  TestClock(this._next);
+  TestClock(this.current);
 
-  DateTime _next;
+  DateTime current;
 
   @override
   DateTime nowUtc() {
-    final current = _next;
-    _next = _next.add(const Duration(minutes: 1));
-    return current;
+    final value = current;
+    current = current.add(const Duration(minutes: 1));
+    return value;
   }
 }
 

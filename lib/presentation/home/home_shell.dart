@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../application/common/application_ports.dart';
+import '../../application/security/device_authenticator.dart';
+import '../../application/settings/local_data_clearer.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../overview/overview_page.dart';
 import '../records/records_page.dart';
+import '../settings/settings_page.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({
@@ -13,6 +16,9 @@ class HomeShell extends StatefulWidget {
     required this.settings,
     required this.clock,
     required this.idGenerator,
+    required this.authenticator,
+    required this.localDataClearer,
+    required this.onResetToFirstUse,
     this.initialDate,
   });
 
@@ -20,6 +26,9 @@ class HomeShell extends StatefulWidget {
   final SettingsRepository settings;
   final ApplicationClock clock;
   final TransactionIdGenerator idGenerator;
+  final DeviceAuthenticator authenticator;
+  final LocalDataClearer localDataClearer;
+  final VoidCallback onResetToFirstUse;
   final DateTime? initialDate;
 
   @override
@@ -53,7 +62,12 @@ class _HomeShellState extends State<HomeShell> {
           });
         },
       ),
-      const Center(child: Text('設定')),
+      SettingsPage(
+        settings: widget.settings,
+        authenticator: widget.authenticator,
+        localDataClearer: widget.localDataClearer,
+        onResetToFirstUse: widget.onResetToFirstUse,
+      ),
     ];
 
     return Scaffold(

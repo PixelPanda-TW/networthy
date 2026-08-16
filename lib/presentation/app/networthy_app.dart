@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../../application/common/application_ports.dart';
+import '../../application/security/app_lock_state_machine.dart';
+import '../../application/security/device_authenticator.dart';
+import '../../application/settings/local_data_clearer.dart';
 import '../../application/settings/onboarding_use_case.dart';
 import '../../domain/model/app_settings.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../home/home_shell.dart';
+import '../security/lock_screen.dart';
 
 class NetworthyApp extends StatelessWidget {
   const NetworthyApp({
@@ -14,6 +18,8 @@ class NetworthyApp extends StatelessWidget {
     required this.settings,
     required this.clock,
     required this.idGenerator,
+    this.authenticator = const NoOpDeviceAuthenticator(),
+    this.localDataClearer = const NoOpLocalDataClearer(),
     this.initialDate,
   });
 
@@ -21,6 +27,8 @@ class NetworthyApp extends StatelessWidget {
   final SettingsRepository settings;
   final ApplicationClock clock;
   final TransactionIdGenerator idGenerator;
+  final DeviceAuthenticator authenticator;
+  final LocalDataClearer localDataClearer;
   final DateTime? initialDate;
 
   @override
@@ -32,6 +40,8 @@ class NetworthyApp extends StatelessWidget {
         settings: settings,
         clock: clock,
         idGenerator: idGenerator,
+        authenticator: authenticator,
+        localDataClearer: localDataClearer,
         initialDate: initialDate,
       ),
     );
@@ -44,6 +54,8 @@ class _AppGate extends StatefulWidget {
     required this.settings,
     required this.clock,
     required this.idGenerator,
+    required this.authenticator,
+    required this.localDataClearer,
     this.initialDate,
   });
 
@@ -51,19 +63,62 @@ class _AppGate extends StatefulWidget {
   final SettingsRepository settings;
   final ApplicationClock clock;
   final TransactionIdGenerator idGenerator;
+  final DeviceAuthenticator authenticator;
+  final LocalDataClearer localDataClearer;
   final DateTime? initialDate;
 
   @override
   State<_AppGate> createState() => _AppGateState();
 }
 
-class _AppGateState extends State<_AppGate> {
+class _AppGateState extends State<_AppGate> with WidgetsBindingObserver {
   late Future<AppSettings> _settingsFuture;
+  var _locked = false;
+  var _coldStartDecisionApplied = false;
+  var _privacyOverlayVisible = false;
+  AppLockStateMachine _lockStateMachine = const AppLockStateMachine();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _settingsFuture = widget.settings.load();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
+      setState(() {
+        _privacyOverlayVisible = true;
+        _lockStateMachine = _lockStateMachine.onBackgrounded(
+          widget.clock.nowUtc(),
+        );
+      });
+      return;
+    }
+
+    if (state == AppLifecycleState.resumed) {
+      _settingsFuture.then((settings) {
+        if (!mounted) {
+          return;
+        }
+        final decision = _lockStateMachine.onResumed(
+          widget.clock.nowUtc(),
+          settings,
+        );
+        setState(() {
+          _privacyOverlayVisible = false;
+          _locked = decision.requiresUnlock;
+        });
+      });
+    }
   }
 
   @override
@@ -73,6 +128,24 @@ class _AppGateState extends State<_AppGate> {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Scaffold(body: Center(child: Text('載入中')));
+        }
+
+        final settings = snapshot.data!;
+        if (!_coldStartDecisionApplied && settings.biometricLockEnabled) {
+          final decision = const AppLockStateMachine().onColdStart(settings);
+          _coldStartDecisionApplied = true;
+          if (decision.requiresUnlock) {
+            _locked = true;
+          }
+        } else if (!_coldStartDecisionApplied) {
+          _coldStartDecisionApplied = true;
+        }
+
+        if (_locked) {
+          return LockScreen(
+            authenticator: widget.authenticator,
+            onUnlocked: () => setState(() => _locked = false),
+          );
         }
 
         if (!snapshot.data!.onboardingCompleted) {
@@ -86,11 +159,24 @@ class _AppGateState extends State<_AppGate> {
           );
         }
 
+        if (_privacyOverlayVisible) {
+          return const Scaffold(body: Center(child: Text('隱私保護中')));
+        }
+
         return HomeShell(
           transactions: widget.transactions,
           settings: widget.settings,
           clock: widget.clock,
           idGenerator: widget.idGenerator,
+          authenticator: widget.authenticator,
+          localDataClearer: widget.localDataClearer,
+          onResetToFirstUse: () {
+            setState(() {
+              _locked = false;
+              _coldStartDecisionApplied = true;
+              _settingsFuture = widget.settings.load();
+            });
+          },
           initialDate: widget.initialDate,
         );
       },

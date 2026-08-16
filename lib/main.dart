@@ -3,9 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'application/common/application_ports.dart';
+import 'application/settings/local_data_clearer.dart';
 import 'data/database/encrypted_database_opener.dart';
+import 'data/repository/clear_local_data.dart';
 import 'data/repository/drift_settings_repository.dart';
 import 'data/repository/drift_transaction_repository.dart';
+import 'data/repository/local_data_clearer_adapter.dart';
 import 'data/security/database_key_store.dart';
 import 'data/security/flutter_secure_storage_secret_store.dart';
 import 'domain/repository/settings_repository.dart';
@@ -44,6 +47,7 @@ class NetworthyBootstrapApp extends StatelessWidget {
           settings: dependencies.settings,
           clock: const SystemApplicationClock(),
           idGenerator: SecureUuidV4Generator(),
+          localDataClearer: dependencies.localDataClearer,
         );
       },
     );
@@ -51,24 +55,37 @@ class NetworthyBootstrapApp extends StatelessWidget {
 
   Future<_AppDependencies> _createDependencies() async {
     final databasePath = await const AppDocumentDatabasePath().resolve();
+    final keyStore = SecureDatabaseKeyStore(
+      secrets: FlutterSecureStorageSecretStore(),
+    );
     final database = await EncryptedDatabaseOpener(
       databasePath: databasePath,
-      keyStore: SecureDatabaseKeyStore(
-        secrets: FlutterSecureStorageSecretStore(),
-      ),
+      keyStore: keyStore,
     ).open();
     return _AppDependencies(
       transactions: DriftTransactionRepository(database),
       settings: DriftSettingsRepository(database),
+      localDataClearer: ClearLocalDataAdapter(
+        ClearLocalData(
+          databasePath: databasePath,
+          keyStore: keyStore,
+          preferences: const NoOpLocalPreferencesStore(),
+        ),
+      ),
     );
   }
 }
 
 class _AppDependencies {
-  const _AppDependencies({required this.transactions, required this.settings});
+  const _AppDependencies({
+    required this.transactions,
+    required this.settings,
+    required this.localDataClearer,
+  });
 
   final TransactionRepository transactions;
   final SettingsRepository settings;
+  final LocalDataClearer localDataClearer;
 }
 
 class SystemApplicationClock implements ApplicationClock {
