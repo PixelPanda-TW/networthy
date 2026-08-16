@@ -52,16 +52,24 @@ class _SettingsPageState extends State<SettingsPage> {
               const Text('資料只儲存在這台裝置。'),
               const Text('解除安裝或清除 App 資料會刪除本機記帳資料。'),
               const SizedBox(height: 24),
-              SwitchListTile(
-                title: const Text('App 鎖定'),
-                subtitle: const Text('使用系統驗證保護記帳內容'),
-                value: settings.biometricLockEnabled,
-                onChanged: (value) => _setAppLock(settings, value),
+              Semantics(
+                label: '啟用或停用 App 鎖定',
+                toggled: settings.biometricLockEnabled,
+                child: SwitchListTile(
+                  title: const Text('App 鎖定'),
+                  subtitle: const Text('使用系統驗證保護記帳內容'),
+                  value: settings.biometricLockEnabled,
+                  onChanged: (value) => _setAppLock(settings, value),
+                ),
               ),
               const SizedBox(height: 24),
-              FilledButton.tonal(
-                onPressed: () => _clearAllData(settings),
-                child: const Text('清除所有資料'),
+              Semantics(
+                label: '清除所有本機資料',
+                button: true,
+                child: FilledButton.tonal(
+                  onPressed: () => _clearAllData(settings),
+                  child: const Text('清除所有資料'),
+                ),
               ),
               if (_message != null) ...[
                 const SizedBox(height: 8),

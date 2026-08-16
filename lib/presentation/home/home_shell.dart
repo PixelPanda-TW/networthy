@@ -75,10 +75,26 @@ class _HomeShellState extends State<HomeShell> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (index) => setState(() => _index = index),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.pie_chart), label: '總覽'),
-          NavigationDestination(icon: Icon(Icons.list), label: '紀錄'),
-          NavigationDestination(icon: Icon(Icons.settings), label: '設定'),
+        destinations: [
+          const NavigationDestination(icon: Icon(Icons.pie_chart), label: '總覽'),
+          NavigationDestination(
+            icon: Semantics(
+              label: '開啟紀錄頁',
+              button: true,
+              child: Icon(Icons.list),
+            ),
+            label: '紀錄',
+            tooltip: '開啟紀錄頁',
+          ),
+          NavigationDestination(
+            icon: Semantics(
+              label: '開啟設定頁',
+              button: true,
+              child: Icon(Icons.settings),
+            ),
+            label: '設定',
+            tooltip: '開啟設定頁',
+          ),
         ],
       ),
     );

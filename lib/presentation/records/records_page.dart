@@ -53,15 +53,23 @@ class _RecordsPageState extends State<RecordsPage> {
       appBar: AppBar(
         title: const Text('紀錄'),
         actions: [
-          IconButton(
-            tooltip: '上一個月',
-            onPressed: _previousMonth,
-            icon: const Icon(Icons.chevron_left),
+          Semantics(
+            label: '切換到上一個月',
+            button: true,
+            child: IconButton(
+              tooltip: '上一個月',
+              onPressed: _previousMonth,
+              icon: const Icon(Icons.chevron_left),
+            ),
           ),
-          IconButton(
-            tooltip: '下一個月',
-            onPressed: _nextMonth,
-            icon: const Icon(Icons.chevron_right),
+          Semantics(
+            label: '切換到下一個月',
+            button: true,
+            child: IconButton(
+              tooltip: '下一個月',
+              onPressed: _nextMonth,
+              icon: const Icon(Icons.chevron_right),
+            ),
           ),
         ],
       ),
@@ -130,10 +138,14 @@ class _RecordsPageState extends State<RecordsPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(formatTwd(record.amountMinor)),
-                          IconButton(
-                            tooltip: '刪除 ${record.note ?? record.categoryId}',
-                            onPressed: () => _confirmDelete(record),
-                            icon: const Icon(Icons.delete_outline),
+                          Semantics(
+                            label: '刪除 ${record.note ?? record.categoryId}',
+                            button: true,
+                            child: IconButton(
+                              tooltip: '刪除 ${record.note ?? record.categoryId}',
+                              onPressed: () => _confirmDelete(record),
+                              icon: const Icon(Icons.delete_outline),
+                            ),
                           ),
                         ],
                       ),

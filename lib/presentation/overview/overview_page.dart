@@ -48,15 +48,23 @@ class _OverviewPageState extends State<OverviewPage> {
       appBar: AppBar(
         title: const Text('總覽'),
         actions: [
-          IconButton(
-            tooltip: '上一個月',
-            onPressed: _previousMonth,
-            icon: const Icon(Icons.chevron_left),
+          Semantics(
+            label: '切換到上一個月',
+            button: true,
+            child: IconButton(
+              tooltip: '上一個月',
+              onPressed: _previousMonth,
+              icon: const Icon(Icons.chevron_left),
+            ),
           ),
-          IconButton(
-            tooltip: '下一個月',
-            onPressed: _nextMonth,
-            icon: const Icon(Icons.chevron_right),
+          Semantics(
+            label: '切換到下一個月',
+            button: true,
+            child: IconButton(
+              tooltip: '下一個月',
+              onPressed: _nextMonth,
+              icon: const Icon(Icons.chevron_right),
+            ),
           ),
         ],
       ),
@@ -123,10 +131,14 @@ class _OverviewPageState extends State<OverviewPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: '新增記帳',
-        onPressed: () => _openForm(),
-        child: const Icon(Icons.add),
+      floatingActionButton: Semantics(
+        label: '新增一筆記帳',
+        button: true,
+        child: FloatingActionButton(
+          tooltip: '新增記帳',
+          onPressed: () => _openForm(),
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
