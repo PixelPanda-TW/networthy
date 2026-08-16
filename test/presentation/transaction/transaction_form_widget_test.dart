@@ -61,7 +61,7 @@ void main() {
     await tester.tap(find.text('儲存'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.textContaining('expense.food NT\$1,200').last);
+    await tester.tap(find.textContaining('餐飲 NT\$1,200').last);
     await tester.pumpAndSettle();
 
     expect(find.text('編輯記帳'), findsOneWidget);
@@ -70,6 +70,33 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('支出 NT\$1,500'), findsOneWidget);
+  });
+
+  testWidgets('category dropdown displays localized category names', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      NetworthyApp(
+        transactions: TestTransactionRepository(),
+        settings: _completedSettings(),
+        clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
+        idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000725']),
+        initialDate: DateTime(2026, 8, 16),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('新增記帳'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('餐飲'), findsOneWidget);
+    expect(find.text('expense.food'), findsNothing);
+
+    await tester.tap(find.text('收入'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('薪資'), findsOneWidget);
+    expect(find.text('income.salary'), findsNothing);
   });
 
   testWidgets('save failure keeps entered form data and shows safe error', (

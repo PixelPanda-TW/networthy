@@ -92,6 +92,10 @@ void main() {
 
     expect(find.text('august expense'), findsOneWidget);
     expect(find.text('august income'), findsOneWidget);
+    expect(find.textContaining('餐飲'), findsOneWidget);
+    expect(find.textContaining('薪資'), findsOneWidget);
+    expect(find.textContaining('expense.food'), findsNothing);
+    expect(find.textContaining('income.salary'), findsNothing);
     expect(find.text('september expense'), findsNothing);
 
     await tester.tap(find.text('收入'));
@@ -170,6 +174,27 @@ void main() {
 
     expect(find.text('支出 NT\$0'), findsOneWidget);
   });
+
+  testWidgets('records delete fallback uses category display name', (
+    tester,
+  ) async {
+    final transactions = TestTransactionRepository();
+    await transactions.save(
+      _transaction(
+        id: '00000000-0000-4000-8000-000000000809',
+        amountMinor: 1000,
+        date: LocalDate(2026, 8, 16),
+        note: null,
+      ),
+    );
+
+    await _pumpApp(tester, transactions);
+    await tester.tap(find.text('紀錄'));
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('刪除 餐飲'), findsOneWidget);
+    expect(find.byTooltip('刪除 expense.food'), findsNothing);
+  });
 }
 
 Future<void> _pumpApp(
@@ -203,7 +228,7 @@ BookkeepingTransaction _transaction({
   required int amountMinor,
   required LocalDate date,
   DateTime? createdAtUtc,
-  required String note,
+  String? note,
 }) {
   return BookkeepingTransaction.create(
     id: id,

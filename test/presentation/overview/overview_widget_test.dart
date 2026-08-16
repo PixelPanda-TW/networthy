@@ -78,7 +78,8 @@ void main() {
 
     expect(find.text('支出 NT\$12,500'), findsOneWidget);
     expect(find.text('結餘 -NT\$12,500'), findsOneWidget);
-    expect(find.textContaining('expense.food NT\$12,500'), findsWidgets);
+    expect(find.textContaining('餐飲 NT\$12,500'), findsWidgets);
+    expect(find.textContaining('expense.food'), findsNothing);
     expect(find.textContaining('午餐'), findsOneWidget);
   });
 }

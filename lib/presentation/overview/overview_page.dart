@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../application/common/application_ports.dart';
+import '../../domain/model/category.dart';
 import '../../domain/model/transaction.dart';
 import '../../domain/model/transaction_type.dart';
 import '../../domain/repository/settings_repository.dart';
@@ -111,7 +112,10 @@ class _OverviewPageState extends State<OverviewPage> {
                 const Text('目前沒有記帳紀錄')
               else
                 for (final entry in data.summary.expenseCategoryTotals.entries)
-                  Text('${entry.key} ${formatTwd(entry.value)}'),
+                  Text(
+                    '${CategoryCatalog.displayNameFor(entry.key)} '
+                    '${formatTwd(entry.value)}',
+                  ),
               const SizedBox(height: 24),
               Text('最近五筆', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
@@ -122,7 +126,8 @@ class _OverviewPageState extends State<OverviewPage> {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(
-                      '${transaction.categoryId} ${formatTwd(transaction.amountMinor)}',
+                      '${CategoryCatalog.displayNameFor(transaction.categoryId)} '
+                      '${formatTwd(transaction.amountMinor)}',
                     ),
                     subtitle: Text(transaction.note ?? transaction.type.label),
                     onTap: () => _openForm(existing: transaction),

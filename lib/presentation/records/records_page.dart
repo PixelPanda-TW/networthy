@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../application/common/application_ports.dart';
 import '../../application/transaction/delete_transaction_use_case.dart';
+import '../../domain/model/category.dart';
 import '../../domain/model/transaction.dart';
 import '../../domain/model/transaction_type.dart';
 import '../../domain/repository/settings_repository.dart';
@@ -129,20 +130,22 @@ class _RecordsPageState extends State<RecordsPage> {
                   itemCount: records.length,
                   itemBuilder: (context, index) {
                     final record = records[index];
+                    final categoryName = CategoryCatalog.displayNameFor(
+                      record.categoryId,
+                    );
+                    final deleteLabel = record.note ?? categoryName;
                     return ListTile(
                       title: Text(record.note ?? record.type.label),
-                      subtitle: Text(
-                        '${record.transactionDate} ${record.categoryId}',
-                      ),
+                      subtitle: Text('${record.transactionDate} $categoryName'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(formatTwd(record.amountMinor)),
                           Semantics(
-                            label: '刪除 ${record.note ?? record.categoryId}',
+                            label: '刪除 $deleteLabel',
                             button: true,
                             child: IconButton(
-                              tooltip: '刪除 ${record.note ?? record.categoryId}',
+                              tooltip: '刪除 $deleteLabel',
                               onPressed: () => _confirmDelete(record),
                               icon: const Icon(Icons.delete_outline),
                             ),

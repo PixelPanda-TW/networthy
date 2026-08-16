@@ -119,8 +119,13 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
             DropdownButtonFormField<String>(
               initialValue: _categoryId,
               decoration: const InputDecoration(labelText: '分類'),
-              items: _categoryIdsForType(_type)
-                  .map((id) => DropdownMenuItem(value: id, child: Text(id)))
+              items: _categoriesForType(_type)
+                  .map(
+                    (category) => DropdownMenuItem(
+                      value: category.id,
+                      child: Text(category.displayName),
+                    ),
+                  )
                   .toList(growable: false),
               onChanged: (value) {
                 if (value != null) {
@@ -191,10 +196,9 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     Navigator.of(context).pop(true);
   }
 
-  List<String> _categoryIdsForType(TransactionType type) {
-    final categories = type == TransactionType.expense
+  List<TransactionCategory> _categoriesForType(TransactionType type) {
+    return type == TransactionType.expense
         ? CategoryCatalog.expenseCategories
         : CategoryCatalog.incomeCategories;
-    return categories.map((category) => category.id).toList(growable: false);
   }
 }
