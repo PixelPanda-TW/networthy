@@ -32,19 +32,38 @@ class AppSettingsRows extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Transactions, AppSettingsRows])
+class Categories extends Table {
+  TextColumn get id => text()();
+  TextColumn get type => text()();
+  TextColumn get name => text()();
+  TextColumn get parentId => text().nullable()();
+  IntColumn get sortOrder => integer()();
+  BoolColumn get isArchived => boolean()();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DriftDatabase(tables: [Transactions, AppSettingsRows, Categories])
 class NetworthyDatabase extends _$NetworthyDatabase {
   NetworthyDatabase(super.executor);
 
   NetworthyDatabase.inMemory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) async {
       await migrator.createAll();
+    },
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) {
+        await migrator.createTable(categories);
+      }
     },
   );
 }
