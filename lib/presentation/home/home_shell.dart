@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../application/common/application_ports.dart';
 import '../../application/security/device_authenticator.dart';
 import '../../application/settings/local_data_clearer.dart';
+import '../../domain/repository/category_repository.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../overview/overview_page.dart';
@@ -14,6 +15,7 @@ class HomeShell extends StatefulWidget {
     super.key,
     required this.transactions,
     required this.settings,
+    required this.categories,
     required this.clock,
     required this.idGenerator,
     required this.authenticator,
@@ -24,6 +26,7 @@ class HomeShell extends StatefulWidget {
 
   final TransactionRepository transactions;
   final SettingsRepository settings;
+  final CategoryRepository categories;
   final ApplicationClock clock;
   final TransactionIdGenerator idGenerator;
   final DeviceAuthenticator authenticator;
@@ -46,6 +49,7 @@ class _HomeShellState extends State<HomeShell> {
         key: ValueKey('overview-$_overviewRefreshKey'),
         transactions: widget.transactions,
         settings: widget.settings,
+        categories: widget.categories,
         clock: widget.clock,
         idGenerator: widget.idGenerator,
         initialDate: widget.initialDate ?? DateTime.now(),
@@ -53,6 +57,7 @@ class _HomeShellState extends State<HomeShell> {
       RecordsPage(
         transactions: widget.transactions,
         settings: widget.settings,
+        categories: widget.categories,
         clock: widget.clock,
         idGenerator: widget.idGenerator,
         initialDate: widget.initialDate ?? DateTime.now(),

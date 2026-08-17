@@ -13,6 +13,7 @@ void main() {
       NetworthyApp(
         transactions: TestTransactionRepository(),
         settings: settings,
+        categories: TestCategoryRepository(),
         clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
         idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000701']),
         initialDate: DateTime(2026, 8, 16),

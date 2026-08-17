@@ -21,6 +21,7 @@ void main() {
             lastIncomeCategoryId: null,
           ),
         ),
+        categories: TestCategoryRepository(),
         clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
         idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000711']),
         initialDate: DateTime(2026, 8, 16),
@@ -69,6 +70,7 @@ void main() {
             lastIncomeCategoryId: null,
           ),
         ),
+        categories: TestCategoryRepository(),
         clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
         idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000713']),
         initialDate: DateTime(2026, 8, 16),
@@ -81,5 +83,46 @@ void main() {
     expect(find.textContaining('餐飲 NT\$12,500'), findsWidgets);
     expect(find.textContaining('expense.food'), findsNothing);
     expect(find.textContaining('午餐'), findsOneWidget);
+  });
+
+  testWidgets('overview uses renamed category display path', (tester) async {
+    final categories = TestCategoryRepository();
+    await categories.rename(id: 'expense.food', name: '吃飯');
+    final transactions = TestTransactionRepository();
+    await transactions.save(
+      BookkeepingTransaction.create(
+        id: '00000000-0000-4000-8000-000000000714',
+        type: TransactionType.expense,
+        amountMinor: 12500,
+        categoryId: 'expense.food',
+        transactionDate: LocalDate(2026, 8, 16),
+        note: '午餐',
+        createdAtUtc: DateTime.utc(2026, 8, 16, 1),
+        updatedAtUtc: DateTime.utc(2026, 8, 16, 1),
+      ),
+    );
+
+    await tester.pumpWidget(
+      NetworthyApp(
+        transactions: transactions,
+        settings: TestSettingsRepository(
+          const AppSettings(
+            onboardingCompleted: true,
+            biometricLockEnabled: false,
+            currencyCode: 'TWD',
+            lastExpenseCategoryId: null,
+            lastIncomeCategoryId: null,
+          ),
+        ),
+        categories: categories,
+        clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
+        idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000715']),
+        initialDate: DateTime(2026, 8, 16),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('吃飯 NT\$12,500'), findsWidgets);
+    expect(find.textContaining('餐飲 NT\$12,500'), findsNothing);
   });
 }

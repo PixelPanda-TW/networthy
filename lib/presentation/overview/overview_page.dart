@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../application/common/application_ports.dart';
-import '../../domain/model/category.dart';
 import '../../domain/model/transaction.dart';
 import '../../domain/model/transaction_type.dart';
+import '../../domain/repository/category_repository.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../../domain/summary/monthly_summary.dart';
@@ -15,6 +15,7 @@ class OverviewPage extends StatefulWidget {
     super.key,
     required this.transactions,
     required this.settings,
+    required this.categories,
     required this.clock,
     required this.idGenerator,
     required this.initialDate,
@@ -22,6 +23,7 @@ class OverviewPage extends StatefulWidget {
 
   final TransactionRepository transactions;
   final SettingsRepository settings;
+  final CategoryRepository categories;
   final ApplicationClock clock;
   final TransactionIdGenerator idGenerator;
   final DateTime initialDate;
@@ -113,7 +115,7 @@ class _OverviewPageState extends State<OverviewPage> {
               else
                 for (final entry in data.summary.expenseCategoryTotals.entries)
                   Text(
-                    '${CategoryCatalog.displayNameFor(entry.key)} '
+                    '${data.categoryDisplayPaths[entry.key] ?? entry.key} '
                     '${formatTwd(entry.value)}',
                   ),
               const SizedBox(height: 24),
@@ -126,7 +128,7 @@ class _OverviewPageState extends State<OverviewPage> {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(
-                      '${CategoryCatalog.displayNameFor(transaction.categoryId)} '
+                      '${data.categoryDisplayPaths[transaction.categoryId] ?? transaction.categoryId} '
                       '${formatTwd(transaction.amountMinor)}',
                     ),
                     subtitle: Text(transaction.note ?? transaction.type.label),
@@ -154,7 +156,24 @@ class _OverviewPageState extends State<OverviewPage> {
       month: _month,
     );
     final recent = await widget.transactions.latest(limit: 5);
-    return _OverviewData(summary: summary, recentTransactions: recent);
+    final categoryDisplayPaths = await _displayPathsFor({
+      ...summary.expenseCategoryTotals.keys,
+      for (final transaction in recent) transaction.categoryId,
+    });
+    return _OverviewData(
+      summary: summary,
+      recentTransactions: recent,
+      categoryDisplayPaths: categoryDisplayPaths,
+    );
+  }
+
+  Future<Map<String, String>> _displayPathsFor(Set<String> ids) async {
+    final entries = await Future.wait(
+      ids.map(
+        (id) async => MapEntry(id, await widget.categories.displayPathFor(id)),
+      ),
+    );
+    return Map<String, String>.fromEntries(entries);
   }
 
   void _previousMonth() {
@@ -187,6 +206,7 @@ class _OverviewPageState extends State<OverviewPage> {
         builder: (context) => TransactionFormPage(
           transactions: widget.transactions,
           settings: widget.settings,
+          categories: widget.categories,
           clock: widget.clock,
           idGenerator: widget.idGenerator,
           initialDate: DateTime(_year, _month),
@@ -206,10 +226,12 @@ class _OverviewData {
   const _OverviewData({
     required this.summary,
     required this.recentTransactions,
+    required this.categoryDisplayPaths,
   });
 
   final MonthlySummary summary;
   final List<BookkeepingTransaction> recentTransactions;
+  final Map<String, String> categoryDisplayPaths;
 }
 
 class _MetricChip extends StatelessWidget {

@@ -195,12 +195,35 @@ void main() {
     expect(find.byTooltip('刪除 餐飲'), findsOneWidget);
     expect(find.byTooltip('刪除 expense.food'), findsNothing);
   });
+
+  testWidgets('records tab uses renamed category display path', (tester) async {
+    final categories = TestCategoryRepository();
+    await categories.rename(id: 'expense.food', name: '吃飯');
+    final transactions = TestTransactionRepository();
+    await transactions.save(
+      _transaction(
+        id: '00000000-0000-4000-8000-000000000810',
+        amountMinor: 1000,
+        date: LocalDate(2026, 8, 16),
+        note: null,
+      ),
+    );
+
+    await _pumpApp(tester, transactions, categories: categories);
+    await tester.tap(find.text('紀錄'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('吃飯'), findsOneWidget);
+    expect(find.byTooltip('刪除 吃飯'), findsOneWidget);
+    expect(find.textContaining('餐飲'), findsNothing);
+  });
 }
 
 Future<void> _pumpApp(
   WidgetTester tester,
-  TestTransactionRepository transactions,
-) async {
+  TestTransactionRepository transactions, {
+  TestCategoryRepository? categories,
+}) async {
   await tester.pumpWidget(
     NetworthyApp(
       transactions: transactions,
@@ -213,6 +236,7 @@ Future<void> _pumpApp(
           lastIncomeCategoryId: null,
         ),
       ),
+      categories: categories ?? TestCategoryRepository(),
       clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
       idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000899']),
       initialDate: DateTime(2026, 8, 16),

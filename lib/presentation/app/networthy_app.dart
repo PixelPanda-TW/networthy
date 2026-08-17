@@ -6,6 +6,7 @@ import '../../application/security/device_authenticator.dart';
 import '../../application/settings/local_data_clearer.dart';
 import '../../application/settings/onboarding_use_case.dart';
 import '../../domain/model/app_settings.dart';
+import '../../domain/repository/category_repository.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../home/home_shell.dart';
@@ -16,6 +17,7 @@ class NetworthyApp extends StatelessWidget {
     super.key,
     required this.transactions,
     required this.settings,
+    required this.categories,
     required this.clock,
     required this.idGenerator,
     this.authenticator = const NoOpDeviceAuthenticator(),
@@ -25,6 +27,7 @@ class NetworthyApp extends StatelessWidget {
 
   final TransactionRepository transactions;
   final SettingsRepository settings;
+  final CategoryRepository categories;
   final ApplicationClock clock;
   final TransactionIdGenerator idGenerator;
   final DeviceAuthenticator authenticator;
@@ -38,6 +41,7 @@ class NetworthyApp extends StatelessWidget {
       home: _AppGate(
         transactions: transactions,
         settings: settings,
+        categories: categories,
         clock: clock,
         idGenerator: idGenerator,
         authenticator: authenticator,
@@ -52,6 +56,7 @@ class _AppGate extends StatefulWidget {
   const _AppGate({
     required this.transactions,
     required this.settings,
+    required this.categories,
     required this.clock,
     required this.idGenerator,
     required this.authenticator,
@@ -61,6 +66,7 @@ class _AppGate extends StatefulWidget {
 
   final TransactionRepository transactions;
   final SettingsRepository settings;
+  final CategoryRepository categories;
   final ApplicationClock clock;
   final TransactionIdGenerator idGenerator;
   final DeviceAuthenticator authenticator;
@@ -166,6 +172,7 @@ class _AppGateState extends State<_AppGate> with WidgetsBindingObserver {
         return HomeShell(
           transactions: widget.transactions,
           settings: widget.settings,
+          categories: widget.categories,
           clock: widget.clock,
           idGenerator: widget.idGenerator,
           authenticator: widget.authenticator,

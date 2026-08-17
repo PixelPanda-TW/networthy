@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../application/common/application_ports.dart';
 import '../../application/transaction/delete_transaction_use_case.dart';
-import '../../domain/model/category.dart';
 import '../../domain/model/transaction.dart';
 import '../../domain/model/transaction_type.dart';
+import '../../domain/repository/category_repository.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../formatters/twd_formatter.dart';
@@ -17,6 +17,7 @@ class RecordsPage extends StatefulWidget {
     super.key,
     required this.transactions,
     required this.settings,
+    required this.categories,
     required this.clock,
     required this.idGenerator,
     required this.initialDate,
@@ -25,6 +26,7 @@ class RecordsPage extends StatefulWidget {
 
   final TransactionRepository transactions;
   final SettingsRepository settings;
+  final CategoryRepository categories;
   final ApplicationClock clock;
   final TransactionIdGenerator idGenerator;
   final DateTime initialDate;
@@ -38,7 +40,7 @@ class _RecordsPageState extends State<RecordsPage> {
   late int _year;
   late int _month;
   var _typeFilter = RecordsTypeFilter.all;
-  late Future<List<BookkeepingTransaction>> _recordsFuture;
+  late Future<List<_RecordRow>> _recordsFuture;
 
   @override
   void initState() {
@@ -113,7 +115,7 @@ class _RecordsPageState extends State<RecordsPage> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<BookkeepingTransaction>>(
+            child: FutureBuilder<List<_RecordRow>>(
               future: _recordsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState != ConnectionState.done) {
@@ -122,17 +124,16 @@ class _RecordsPageState extends State<RecordsPage> {
                 if (snapshot.hasError) {
                   return const Center(child: Text('紀錄載入失敗'));
                 }
-                final records = snapshot.data!;
-                if (records.isEmpty) {
+                final rows = snapshot.data!;
+                if (rows.isEmpty) {
                   return const Center(child: Text('目前沒有記帳紀錄'));
                 }
                 return ListView.builder(
-                  itemCount: records.length,
+                  itemCount: rows.length,
                   itemBuilder: (context, index) {
-                    final record = records[index];
-                    final categoryName = CategoryCatalog.displayNameFor(
-                      record.categoryId,
-                    );
+                    final row = rows[index];
+                    final record = row.transaction;
+                    final categoryName = row.categoryDisplayPath;
                     final deleteLabel = record.note ?? categoryName;
                     return ListTile(
                       title: Text(record.note ?? record.type.label),
@@ -164,7 +165,7 @@ class _RecordsPageState extends State<RecordsPage> {
     );
   }
 
-  Future<List<BookkeepingTransaction>> _load() async {
+  Future<List<_RecordRow>> _load() async {
     final records = await widget.transactions.list(
       TransactionQuery(
         year: _year,
@@ -184,7 +185,16 @@ class _RecordsPageState extends State<RecordsPage> {
         }
         return b.createdAtUtc.compareTo(a.createdAtUtc);
       });
-    return sorted;
+    return Future.wait(
+      sorted.map((record) async {
+        return _RecordRow(
+          transaction: record,
+          categoryDisplayPath: await widget.categories.displayPathFor(
+            record.categoryId,
+          ),
+        );
+      }),
+    );
   }
 
   void _previousMonth() {
@@ -217,6 +227,7 @@ class _RecordsPageState extends State<RecordsPage> {
         builder: (context) => TransactionFormPage(
           transactions: widget.transactions,
           settings: widget.settings,
+          categories: widget.categories,
           clock: widget.clock,
           idGenerator: widget.idGenerator,
           initialDate: DateTime(_year, _month),
@@ -272,6 +283,16 @@ class _RecordsPageState extends State<RecordsPage> {
       _recordsFuture = _load();
     });
   }
+}
+
+class _RecordRow {
+  const _RecordRow({
+    required this.transaction,
+    required this.categoryDisplayPath,
+  });
+
+  final BookkeepingTransaction transaction;
+  final String categoryDisplayPath;
 }
 
 extension on TransactionType {

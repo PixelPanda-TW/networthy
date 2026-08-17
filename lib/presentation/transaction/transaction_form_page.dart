@@ -4,10 +4,11 @@ import '../../application/common/application_ports.dart';
 import '../../application/transaction/add_transaction_use_case.dart';
 import '../../application/transaction/edit_transaction_use_case.dart';
 import '../../application/transaction/transaction_command.dart';
-import '../../domain/model/category.dart';
+import '../../domain/model/category_definition.dart';
 import '../../domain/model/local_date.dart';
 import '../../domain/model/transaction.dart';
 import '../../domain/model/transaction_type.dart';
+import '../../domain/repository/category_repository.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
 
@@ -16,6 +17,7 @@ class TransactionFormPage extends StatefulWidget {
     super.key,
     required this.transactions,
     required this.settings,
+    required this.categories,
     required this.clock,
     required this.idGenerator,
     required this.initialDate,
@@ -24,6 +26,7 @@ class TransactionFormPage extends StatefulWidget {
 
   final TransactionRepository transactions;
   final SettingsRepository settings;
+  final CategoryRepository categories;
   final ApplicationClock clock;
   final TransactionIdGenerator idGenerator;
   final DateTime initialDate;
@@ -40,6 +43,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   final _amountFocusNode = FocusNode();
   late TransactionType _type;
   late String _categoryId;
+  late Future<List<_CategoryOption>> _categoryOptionsFuture;
   String? _safeError;
 
   @override
@@ -48,6 +52,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     final existing = widget.existing;
     _type = existing?.type ?? TransactionType.expense;
     _categoryId = existing?.categoryId ?? 'expense.food';
+    _categoryOptionsFuture = _loadCategoryOptions(_type);
     if (existing != null) {
       _amountController.text = existing.amountMinor.toString();
       _noteController.text = existing.note ?? '';
@@ -91,6 +96,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                   _categoryId = _type == TransactionType.expense
                       ? 'expense.food'
                       : 'income.salary';
+                  _categoryOptionsFuture = _loadCategoryOptions(_type);
                 });
               },
             ),
@@ -116,21 +122,43 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
               },
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              initialValue: _categoryId,
-              decoration: const InputDecoration(labelText: '分類'),
-              items: _categoriesForType(_type)
-                  .map(
-                    (category) => DropdownMenuItem(
-                      value: category.id,
-                      child: Text(category.displayName),
-                    ),
-                  )
-                  .toList(growable: false),
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _categoryId = value);
+            FutureBuilder<List<_CategoryOption>>(
+              future: _categoryOptionsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Text('分類載入中');
                 }
+                if (snapshot.hasError) {
+                  return const Text('分類載入失敗');
+                }
+                final options = snapshot.data!;
+                final selectedValue =
+                    options.any((option) => option.id == _categoryId)
+                    ? _categoryId
+                    : null;
+                return DropdownButtonFormField<String>(
+                  initialValue: selectedValue,
+                  decoration: const InputDecoration(labelText: '分類'),
+                  items: options
+                      .map(
+                        (category) => DropdownMenuItem(
+                          value: category.id,
+                          child: Text(category.label),
+                        ),
+                      )
+                      .toList(growable: false),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _categoryId = value);
+                    }
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return '請選擇分類';
+                    }
+                    return null;
+                  },
+                );
               },
             ),
             const SizedBox(height: 16),
@@ -175,12 +203,14 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
         ? await AddTransactionUseCase(
             transactions: widget.transactions,
             settings: widget.settings,
+            categories: widget.categories,
             clock: widget.clock,
             idGenerator: widget.idGenerator,
           ).execute(command)
         : await EditTransactionUseCase(
             transactions: widget.transactions,
             settings: widget.settings,
+            categories: widget.categories,
             clock: widget.clock,
           ).execute(id: widget.existing!.id, command: command);
 
@@ -196,9 +226,47 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     Navigator.of(context).pop(true);
   }
 
-  List<TransactionCategory> _categoriesForType(TransactionType type) {
-    return type == TransactionType.expense
-        ? CategoryCatalog.expenseCategories
-        : CategoryCatalog.incomeCategories;
+  Future<List<_CategoryOption>> _loadCategoryOptions(
+    TransactionType type,
+  ) async {
+    final categories = await widget.categories.listActive(type);
+    final selectedCategory = await _selectedArchivedCategory(type, categories);
+    final categoryOptions = [...categories, ?selectedCategory];
+    return Future.wait(
+      categoryOptions.map((category) async {
+        final displayPath = await widget.categories.displayPathFor(category.id);
+        return _CategoryOption(
+          id: category.id,
+          label: category.isArchived ? '$displayPath（已封存）' : displayPath,
+        );
+      }),
+    );
   }
+
+  Future<EditableCategory?> _selectedArchivedCategory(
+    TransactionType type,
+    List<EditableCategory> activeCategories,
+  ) async {
+    if (widget.existing?.categoryId != _categoryId) {
+      return null;
+    }
+    final alreadyActive = activeCategories.any(
+      (category) => category.id == _categoryId,
+    );
+    if (alreadyActive) {
+      return null;
+    }
+    final category = await widget.categories.findById(_categoryId);
+    if (category == null || category.type != type || !category.isArchived) {
+      return null;
+    }
+    return category;
+  }
+}
+
+class _CategoryOption {
+  const _CategoryOption({required this.id, required this.label});
+
+  final String id;
+  final String label;
 }

@@ -6,6 +6,7 @@ import 'application/common/application_ports.dart';
 import 'application/settings/local_data_clearer.dart';
 import 'data/database/encrypted_database_opener.dart';
 import 'data/repository/clear_local_data.dart';
+import 'data/repository/drift_category_repository.dart';
 import 'data/repository/drift_settings_repository.dart';
 import 'data/repository/drift_transaction_repository.dart';
 import 'data/repository/local_data_clearer_adapter.dart';
@@ -13,6 +14,7 @@ import 'data/security/database_key_store.dart';
 import 'data/security/flutter_secure_storage_secret_store.dart';
 import 'domain/repository/settings_repository.dart';
 import 'domain/repository/transaction_repository.dart';
+import 'domain/repository/category_repository.dart';
 import 'platform/app_document_database_path.dart';
 import 'presentation/app/networthy_app.dart';
 
@@ -45,6 +47,7 @@ class NetworthyBootstrapApp extends StatelessWidget {
         return NetworthyApp(
           transactions: dependencies.transactions,
           settings: dependencies.settings,
+          categories: dependencies.categories,
           clock: const SystemApplicationClock(),
           idGenerator: SecureUuidV4Generator(),
           localDataClearer: dependencies.localDataClearer,
@@ -62,9 +65,12 @@ class NetworthyBootstrapApp extends StatelessWidget {
       databasePath: databasePath,
       keyStore: keyStore,
     ).open();
+    final categories = DriftCategoryRepository(database);
+    await categories.ensureBuiltInCategoriesSeeded();
     return _AppDependencies(
       transactions: DriftTransactionRepository(database),
       settings: DriftSettingsRepository(database),
+      categories: categories,
       localDataClearer: ClearLocalDataAdapter(
         ClearLocalData(
           databasePath: databasePath,
@@ -80,11 +86,13 @@ class _AppDependencies {
   const _AppDependencies({
     required this.transactions,
     required this.settings,
+    required this.categories,
     required this.localDataClearer,
   });
 
   final TransactionRepository transactions;
   final SettingsRepository settings;
+  final CategoryRepository categories;
   final LocalDataClearer localDataClearer;
 }
 

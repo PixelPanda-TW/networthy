@@ -24,6 +24,7 @@ void main() {
               lastIncomeCategoryId: null,
             ),
           ),
+          categories: TestCategoryRepository(),
           clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
           idGenerator: TestIdGenerator([
             '00000000-0000-4000-8000-000000008101',

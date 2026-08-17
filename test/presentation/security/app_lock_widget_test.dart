@@ -70,6 +70,7 @@ void main() {
       NetworthyApp(
         transactions: TestTransactionRepository(),
         settings: _settings(lockEnabled: true),
+        categories: TestCategoryRepository(),
         clock: clock,
         idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000901']),
         authenticator: authenticator,
@@ -101,6 +102,7 @@ Future<void> _pumpLockedApp(
     NetworthyApp(
       transactions: TestTransactionRepository(),
       settings: _settings(lockEnabled: lockEnabled),
+      categories: TestCategoryRepository(),
       clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
       idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000900']),
       authenticator: authenticator,

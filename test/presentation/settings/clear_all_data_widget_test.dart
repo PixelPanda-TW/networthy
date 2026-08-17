@@ -97,6 +97,7 @@ Future<void> _pumpApp(
     NetworthyApp(
       transactions: TestTransactionRepository(),
       settings: settings ?? _settings(lockEnabled: false),
+      categories: TestCategoryRepository(),
       clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
       idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000921']),
       authenticator: authenticator,

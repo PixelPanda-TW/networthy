@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:networthy/domain/model/app_settings.dart';
+import 'package:networthy/domain/model/local_date.dart';
+import 'package:networthy/domain/model/transaction.dart';
+import 'package:networthy/domain/model/transaction_type.dart';
 import 'package:networthy/presentation/app/networthy_app.dart';
 
 import '../test_app_harness.dart';
@@ -15,6 +18,7 @@ void main() {
       NetworthyApp(
         transactions: transactions,
         settings: _completedSettings(),
+        categories: TestCategoryRepository(),
         clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
         idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000721']),
         initialDate: DateTime(2026, 8, 16),
@@ -48,6 +52,7 @@ void main() {
       NetworthyApp(
         transactions: transactions,
         settings: _completedSettings(),
+        categories: TestCategoryRepository(),
         clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
         idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000722']),
         initialDate: DateTime(2026, 8, 16),
@@ -79,6 +84,7 @@ void main() {
       NetworthyApp(
         transactions: TestTransactionRepository(),
         settings: _completedSettings(),
+        categories: TestCategoryRepository(),
         clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
         idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000725']),
         initialDate: DateTime(2026, 8, 16),
@@ -99,6 +105,43 @@ void main() {
     expect(find.text('income.salary'), findsNothing);
   });
 
+  testWidgets('archived selected category remains visible while editing', (
+    tester,
+  ) async {
+    final categories = TestCategoryRepository();
+    await categories.archive('expense.food');
+    final transactions = TestTransactionRepository();
+    await transactions.save(
+      BookkeepingTransaction.create(
+        id: '00000000-0000-4000-8000-000000000726',
+        type: TransactionType.expense,
+        amountMinor: 100,
+        categoryId: 'expense.food',
+        transactionDate: LocalDate(2026, 8, 16),
+        note: 'old food',
+        createdAtUtc: DateTime.utc(2026, 8, 16, 1),
+        updatedAtUtc: DateTime.utc(2026, 8, 16, 1),
+      ),
+    );
+
+    await tester.pumpWidget(
+      NetworthyApp(
+        transactions: transactions,
+        settings: _completedSettings(),
+        categories: categories,
+        clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
+        idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000727']),
+        initialDate: DateTime(2026, 8, 16),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('old food'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('餐飲（已封存）'), findsOneWidget);
+  });
+
   testWidgets('save failure keeps entered form data and shows safe error', (
     tester,
   ) async {
@@ -106,6 +149,7 @@ void main() {
       NetworthyApp(
         transactions: TestTransactionRepository(throwOnSave: true),
         settings: _completedSettings(),
+        categories: TestCategoryRepository(),
         clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
         idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000723']),
         initialDate: DateTime(2026, 8, 16),
@@ -132,6 +176,7 @@ void main() {
       NetworthyApp(
         transactions: TestTransactionRepository(),
         settings: _completedSettings(),
+        categories: TestCategoryRepository(),
         clock: TestClock(DateTime.utc(2026, 8, 16, 1)),
         idGenerator: TestIdGenerator(['00000000-0000-4000-8000-000000000724']),
         initialDate: DateTime(2026, 8, 16),
