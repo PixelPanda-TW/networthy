@@ -46,14 +46,62 @@ class Categories extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Transactions, AppSettingsRows, Categories])
+class Accounts extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get currencyCode => text()();
+  BoolColumn get isArchived => boolean()();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class LedgerTransactions extends Table {
+  TextColumn get id => text()();
+  TextColumn get type => text()();
+  TextColumn get categoryId => text().nullable()();
+  IntColumn get transactionYear => integer()();
+  IntColumn get transactionMonth => integer()();
+  IntColumn get transactionDay => integer()();
+  TextColumn get note => text().nullable()();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class LedgerEntries extends Table {
+  TextColumn get id => text()();
+  TextColumn get transactionId => text()();
+  TextColumn get accountId => text()();
+  IntColumn get amountMinor => integer()();
+  TextColumn get currencyCode => text()();
+  DateTimeColumn get createdAtUtc => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DriftDatabase(
+  tables: [
+    Transactions,
+    AppSettingsRows,
+    Categories,
+    Accounts,
+    LedgerTransactions,
+    LedgerEntries,
+  ],
+)
 class NetworthyDatabase extends _$NetworthyDatabase {
   NetworthyDatabase(super.executor);
 
   NetworthyDatabase.inMemory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -64,6 +112,93 @@ class NetworthyDatabase extends _$NetworthyDatabase {
       if (from < 2) {
         await migrator.createTable(categories);
       }
+      if (from < 3) {
+        await migrator.createTable(accounts);
+        await migrator.createTable(ledgerTransactions);
+        await migrator.createTable(ledgerEntries);
+        await _migrateV2TransactionsToLedger();
+      }
     },
   );
+
+  Future<void> _migrateV2TransactionsToLedger() async {
+    const defaultAccountId = '00000000-0000-4000-8000-000000030000';
+    final now = DateTime.now().toUtc().millisecondsSinceEpoch;
+    await customStatement(
+      '''
+      INSERT OR IGNORE INTO accounts (
+        id,
+        name,
+        currency_code,
+        is_archived,
+        created_at_utc,
+        updated_at_utc
+      ) VALUES (?, ?, ?, ?, ?, ?);
+      ''',
+      [defaultAccountId, '現金 TWD', 'TWD', 0, now, now],
+    );
+
+    final existingTransactions = await customSelect('''
+      SELECT
+        id,
+        type,
+        amount_minor,
+        currency_code,
+        category_id,
+        transaction_year,
+        transaction_month,
+        transaction_day,
+        note,
+        created_at_utc,
+        updated_at_utc
+      FROM transactions;
+      ''').get();
+    for (final row in existingTransactions) {
+      final id = row.read<String>('id');
+      final type = row.read<String>('type');
+      final amountMinor = row.read<int>('amount_minor');
+      final signedAmount = type == 'expense' ? -amountMinor : amountMinor;
+      final currencyCode = row.read<String>('currency_code');
+      final createdAtUtc = row.read<int>('created_at_utc');
+      await customStatement(
+        '''
+        INSERT OR IGNORE INTO ledger_transactions (
+          id,
+          type,
+          category_id,
+          transaction_year,
+          transaction_month,
+          transaction_day,
+          note,
+          created_at_utc,
+          updated_at_utc
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+        ''',
+        [
+          id,
+          type,
+          row.read<String>('category_id'),
+          row.read<int>('transaction_year'),
+          row.read<int>('transaction_month'),
+          row.read<int>('transaction_day'),
+          row.readNullable<String>('note'),
+          createdAtUtc,
+          row.read<int>('updated_at_utc'),
+        ],
+      );
+      await customStatement(
+        '''
+        INSERT OR IGNORE INTO ledger_entries (
+          id,
+          transaction_id,
+          account_id,
+          amount_minor,
+          currency_code,
+          created_at_utc
+        ) VALUES (?, ?, ?, ?, ?, ?);
+        ''',
+        [id, id, defaultAccountId, signedAmount, currencyCode, createdAtUtc],
+      );
+    }
+  }
 }
