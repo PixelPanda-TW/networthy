@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:networthy/application/common/application_ports.dart';
 import 'package:networthy/domain/model/app_settings.dart';
 import 'package:networthy/domain/model/category.dart';
@@ -8,6 +9,10 @@ import 'package:networthy/domain/repository/category_repository.dart';
 import 'package:networthy/domain/repository/settings_repository.dart';
 import 'package:networthy/domain/repository/transaction_repository.dart';
 import 'package:networthy/domain/summary/monthly_summary.dart';
+
+MaterialApp testMaterialApp(Widget home) {
+  return MaterialApp(theme: ThemeData(useMaterial3: true), home: home);
+}
 
 class TestClock implements ApplicationClock {
   TestClock(this.current);

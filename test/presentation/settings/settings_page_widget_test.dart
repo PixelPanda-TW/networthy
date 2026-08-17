@@ -66,6 +66,17 @@ void main() {
     expect(settings.value.biometricLockEnabled, isFalse);
     expect(find.text('此裝置尚未設定可用的系統驗證。'), findsOneWidget);
   });
+
+  testWidgets('settings opens category management', (tester) async {
+    await _pumpApp(tester, TestDeviceAuthenticator(authenticateResults: []));
+
+    await tester.tap(find.text('設定'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('分類管理'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('支出分類'), findsOneWidget);
+  });
 }
 
 Future<void> _pumpApp(

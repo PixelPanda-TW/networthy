@@ -69,6 +69,7 @@ class _HomeShellState extends State<HomeShell> {
       ),
       SettingsPage(
         settings: widget.settings,
+        categories: widget.categories,
         authenticator: widget.authenticator,
         localDataClearer: widget.localDataClearer,
         onResetToFirstUse: widget.onResetToFirstUse,

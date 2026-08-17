@@ -3,18 +3,22 @@ import 'package:flutter/material.dart';
 import '../../application/security/device_authenticator.dart';
 import '../../application/settings/local_data_clearer.dart';
 import '../../domain/model/app_settings.dart';
+import '../../domain/repository/category_repository.dart';
 import '../../domain/repository/settings_repository.dart';
+import 'category_management_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({
     super.key,
     required this.settings,
+    required this.categories,
     required this.authenticator,
     required this.localDataClearer,
     required this.onResetToFirstUse,
   });
 
   final SettingsRepository settings;
+  final CategoryRepository categories;
   final DeviceAuthenticator authenticator;
   final LocalDataClearer localDataClearer;
   final VoidCallback onResetToFirstUse;
@@ -51,6 +55,14 @@ class _SettingsPageState extends State<SettingsPage> {
               const SizedBox(height: 16),
               const Text('資料只儲存在這台裝置。'),
               const Text('解除安裝或清除 App 資料會刪除本機記帳資料。'),
+              const SizedBox(height: 24),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('分類管理'),
+                subtitle: const Text('新增、重新命名或封存分類'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: _openCategoryManagement,
+              ),
               const SizedBox(height: 24),
               Semantics(
                 label: '啟用或停用 App 鎖定',
@@ -109,6 +121,15 @@ class _SettingsPageState extends State<SettingsPage> {
       _message = null;
       _settingsFuture = widget.settings.load();
     });
+  }
+
+  Future<void> _openCategoryManagement() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (context) =>
+            CategoryManagementPage(categories: widget.categories),
+      ),
+    );
   }
 
   Future<void> _clearAllData(AppSettings current) async {
