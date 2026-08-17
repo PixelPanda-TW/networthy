@@ -80,4 +80,12 @@ void main() {
   test('falls back to the raw id for unknown category ids', () {
     expect(CategoryCatalog.displayNameFor('custom.future'), 'custom.future');
   });
+
+  test('exposes built-in seed definitions for migration', () {
+    expect(
+      CategoryCatalog.builtInDefinitions.map((category) => category.id),
+      containsAll(<String>['expense.food', 'income.salary']),
+    );
+    expect(CategoryCatalog.builtInDisplayNameFor('expense.food'), '餐飲');
+  });
 }

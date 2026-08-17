@@ -88,6 +88,8 @@ class CategoryCatalog {
     ...incomeCategories,
   ];
 
+  static const List<TransactionCategory> builtInDefinitions = allCategories;
+
   static bool isCompatible({
     required String categoryId,
     required TransactionType type,
@@ -104,5 +106,9 @@ class CategoryCatalog {
       }
     }
     return categoryId;
+  }
+
+  static String builtInDisplayNameFor(String categoryId) {
+    return displayNameFor(categoryId);
   }
 }
