@@ -1,24 +1,36 @@
 import 'package:flutter/material.dart';
 
 import '../../application/security/device_authenticator.dart';
+import '../../application/common/application_ports.dart';
 import '../../application/settings/local_data_clearer.dart';
 import '../../domain/model/app_settings.dart';
+import '../../domain/repository/account_repository.dart';
 import '../../domain/repository/category_repository.dart';
+import '../../domain/repository/ledger_repository.dart';
 import '../../domain/repository/settings_repository.dart';
+import 'account_management_page.dart';
 import 'category_management_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({
     super.key,
     required this.settings,
+    required this.accounts,
+    required this.ledger,
     required this.categories,
+    required this.clock,
+    required this.idGenerator,
     required this.authenticator,
     required this.localDataClearer,
     required this.onResetToFirstUse,
   });
 
   final SettingsRepository settings;
+  final AccountRepository accounts;
+  final LedgerRepository ledger;
   final CategoryRepository categories;
+  final ApplicationClock clock;
+  final TransactionIdGenerator idGenerator;
   final DeviceAuthenticator authenticator;
   final LocalDataClearer localDataClearer;
   final VoidCallback onResetToFirstUse;
@@ -62,6 +74,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 subtitle: const Text('新增、重新命名或封存分類'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: _openCategoryManagement,
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('帳戶管理'),
+                subtitle: const Text('新增、重新命名或封存帳戶'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: _openAccountManagement,
               ),
               const SizedBox(height: 24),
               Semantics(
@@ -128,6 +147,19 @@ class _SettingsPageState extends State<SettingsPage> {
       MaterialPageRoute(
         builder: (context) =>
             CategoryManagementPage(categories: widget.categories),
+      ),
+    );
+  }
+
+  Future<void> _openAccountManagement() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (context) => AccountManagementPage(
+          accounts: widget.accounts,
+          ledger: widget.ledger,
+          clock: widget.clock,
+          idGenerator: widget.idGenerator,
+        ),
       ),
     );
   }

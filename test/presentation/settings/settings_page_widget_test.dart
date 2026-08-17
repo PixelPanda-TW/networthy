@@ -77,6 +77,17 @@ void main() {
 
     expect(find.text('支出分類'), findsOneWidget);
   });
+
+  testWidgets('settings opens account management', (tester) async {
+    await _pumpApp(tester, TestDeviceAuthenticator(authenticateResults: []));
+
+    await tester.tap(find.text('設定'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('帳戶管理'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('新增帳戶'), findsOneWidget);
+  });
 }
 
 Future<void> _pumpApp(

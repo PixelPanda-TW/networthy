@@ -79,7 +79,11 @@ class _HomeShellState extends State<HomeShell> {
       ),
       SettingsPage(
         settings: widget.settings,
+        accounts: widget.accounts,
+        ledger: widget.ledger,
         categories: widget.categories,
+        clock: widget.clock,
+        idGenerator: widget.idGenerator,
         authenticator: widget.authenticator,
         localDataClearer: widget.localDataClearer,
         onResetToFirstUse: widget.onResetToFirstUse,
