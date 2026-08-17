@@ -272,6 +272,52 @@ void main() {
     expect(find.textContaining('初始'), findsNothing);
     expect(find.textContaining('NT\$1,000'), findsNothing);
   });
+
+  testWidgets('records display transfer as one row', (tester) async {
+    final accounts = TestAccountRepository(seedDefault: false);
+    final source = await accounts.create(
+      const CreateAccountRequest(
+        id: '00000000-0000-4000-8000-000000037101',
+        name: '玉山台幣',
+        currencyCode: CurrencyCode.twd,
+        openingBalanceMinor: 0,
+      ),
+    );
+    final target = await accounts.create(
+      const CreateAccountRequest(
+        id: '00000000-0000-4000-8000-000000037102',
+        name: '現金 TWD',
+        currencyCode: CurrencyCode.twd,
+        openingBalanceMinor: 0,
+      ),
+    );
+    final ledger = TestLedgerRepository();
+    await ledger.save(
+      LedgerTransactionBuilder.transfer(
+        transactionId: '00000000-0000-4000-8000-000000037103',
+        sourceEntryId: '00000000-0000-4000-8000-000000037104',
+        targetEntryId: '00000000-0000-4000-8000-000000037105',
+        source: source,
+        target: target,
+        amountMinor: 1000,
+        transactionDate: LocalDate(2026, 8, 16),
+        note: '領現',
+        createdAtUtc: DateTime.utc(2026, 8, 16, 1),
+      ),
+    );
+
+    await _pumpApp(
+      tester,
+      TestTransactionRepository(),
+      accounts: accounts,
+      ledger: ledger,
+    );
+    await tester.tap(find.text('紀錄'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('玉山台幣 → 現金 TWD NT\$1,000'), findsOneWidget);
+    expect(find.textContaining('-NT\$1,000'), findsNothing);
+  });
 }
 
 Future<void> _pumpApp(

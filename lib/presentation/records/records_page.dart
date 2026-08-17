@@ -141,25 +141,17 @@ class _RecordsPageState extends State<RecordsPage> {
                     final record = row.record;
                     final categoryName = row.categoryDisplayPath;
                     final deleteLabel = record.transaction.note ?? categoryName;
-                    final entry = record.entries.single;
                     return ListTile(
-                      title: Text(
-                        record.transaction.note ??
-                            record.transaction.type.label,
-                      ),
+                      title: Text(row.title),
                       subtitle: Text(
                         '${record.transaction.transactionDate} '
-                        '$categoryName · ${row.accountDisplayName}',
+                        '${row.subtitle}',
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            formatCurrency(
-                              entry.amountMinor.abs(),
-                              entry.currencyCode,
-                            ),
-                          ),
+                          if (row.trailingAmount != null)
+                            Text(row.trailingAmount!),
                           Semantics(
                             label: '刪除 $deleteLabel',
                             button: true,
@@ -171,7 +163,11 @@ class _RecordsPageState extends State<RecordsPage> {
                           ),
                         ],
                       ),
-                      onTap: () => _openEditForm(record),
+                      onTap:
+                          record.transaction.type ==
+                              LedgerTransactionType.transfer
+                          ? null
+                          : () => _openEditForm(record),
                     );
                   },
                 );
@@ -203,9 +199,9 @@ class _RecordsPageState extends State<RecordsPage> {
           categoryDisplayPath: categoryId == null
               ? record.transaction.type.label
               : await widget.categories.displayPathFor(categoryId),
-          accountDisplayName: await widget.accounts.displayNameFor(
-            record.entries.single.accountId,
-          ),
+          title: await _titleFor(record),
+          subtitle: await _subtitleFor(record),
+          trailingAmount: _trailingAmountFor(record),
         );
       }),
     );
@@ -299,18 +295,59 @@ class _RecordsPageState extends State<RecordsPage> {
       _recordsFuture = _load();
     });
   }
+
+  Future<String> _titleFor(LedgerRecord record) async {
+    if (record.transaction.type == LedgerTransactionType.transfer) {
+      final source = record.entries.firstWhere(
+        (entry) => entry.amountMinor < 0,
+      );
+      final target = record.entries.firstWhere(
+        (entry) => entry.amountMinor > 0,
+      );
+      final sourceName = await widget.accounts.displayNameFor(source.accountId);
+      final targetName = await widget.accounts.displayNameFor(target.accountId);
+      return '$sourceName → $targetName ${formatCurrency(target.amountMinor, target.currencyCode)}';
+    }
+    return record.transaction.note ?? record.transaction.type.label;
+  }
+
+  Future<String> _subtitleFor(LedgerRecord record) async {
+    final categoryId = record.transaction.categoryId;
+    if (record.transaction.type == LedgerTransactionType.transfer) {
+      return record.transaction.note ?? record.transaction.type.label;
+    }
+    final accountName = await widget.accounts.displayNameFor(
+      record.entries.single.accountId,
+    );
+    final category = categoryId == null
+        ? record.transaction.type.label
+        : await widget.categories.displayPathFor(categoryId);
+    return '$category · $accountName';
+  }
+
+  String? _trailingAmountFor(LedgerRecord record) {
+    if (record.transaction.type == LedgerTransactionType.transfer) {
+      return null;
+    }
+    final entry = record.entries.single;
+    return formatCurrency(entry.amountMinor.abs(), entry.currencyCode);
+  }
 }
 
 class _RecordRow {
   const _RecordRow({
     required this.record,
     required this.categoryDisplayPath,
-    required this.accountDisplayName,
+    required this.title,
+    required this.subtitle,
+    required this.trailingAmount,
   });
 
   final LedgerRecord record;
   final String categoryDisplayPath;
-  final String accountDisplayName;
+  final String title;
+  final String subtitle;
+  final String? trailingAmount;
 }
 
 extension on LedgerTransactionType {

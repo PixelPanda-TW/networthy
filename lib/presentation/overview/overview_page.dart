@@ -10,6 +10,7 @@ import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../formatters/twd_formatter.dart';
 import '../transaction/transaction_form_page.dart';
+import '../transfer/transfer_form_page.dart';
 
 class OverviewPage extends StatefulWidget {
   const OverviewPage({
@@ -74,6 +75,7 @@ class _OverviewPageState extends State<OverviewPage> {
               icon: const Icon(Icons.chevron_right),
             ),
           ),
+          TextButton(onPressed: _openTransferForm, child: const Text('轉帳')),
         ],
       ),
       body: FutureBuilder<_OverviewData>(
@@ -154,8 +156,7 @@ class _OverviewPageState extends State<OverviewPage> {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(
-                      '${data.categoryDisplayPaths[record.transaction.categoryId] ?? record.transaction.categoryId} '
-                      '${formatCurrency(record.entries.single.amountMinor.abs(), record.entries.single.currencyCode)}',
+                      _recentRecordTitle(record, data.categoryDisplayPaths),
                     ),
                     subtitle: Text(
                       record.transaction.note ?? record.transaction.type.label,
@@ -273,6 +274,40 @@ class _OverviewPageState extends State<OverviewPage> {
       });
     }
   }
+
+  Future<void> _openTransferForm() async {
+    final changed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (context) => TransferFormPage(
+          accounts: widget.accounts,
+          ledger: widget.ledger,
+          clock: widget.clock,
+          idGenerator: widget.idGenerator,
+        ),
+      ),
+    );
+    if (changed == true && mounted) {
+      setState(() {
+        _dataFuture = _load();
+      });
+    }
+  }
+}
+
+String _recentRecordTitle(
+  LedgerRecord record,
+  Map<String, String> categoryDisplayPaths,
+) {
+  if (record.transaction.type == LedgerTransactionType.transfer) {
+    final amount = record.entries
+        .where((entry) => entry.amountMinor > 0)
+        .first
+        .amountMinor;
+    return '轉帳 ${formatCurrency(amount, record.entries.first.currencyCode)}';
+  }
+  final entry = record.entries.single;
+  return '${categoryDisplayPaths[record.transaction.categoryId] ?? record.transaction.categoryId} '
+      '${formatCurrency(entry.amountMinor.abs(), entry.currencyCode)}';
 }
 
 class _OverviewData {
