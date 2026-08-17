@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../application/common/application_ports.dart';
-import '../../application/transaction/delete_transaction_use_case.dart';
-import '../../domain/model/transaction.dart';
-import '../../domain/model/transaction_type.dart';
+import '../../application/ledger/ledger_command.dart';
+import '../../application/ledger/ledger_use_cases.dart';
+import '../../domain/model/ledger_transaction.dart';
+import '../../domain/repository/account_repository.dart';
 import '../../domain/repository/category_repository.dart';
+import '../../domain/repository/ledger_repository.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../formatters/twd_formatter.dart';
@@ -16,6 +18,8 @@ class RecordsPage extends StatefulWidget {
   const RecordsPage({
     super.key,
     required this.transactions,
+    required this.accounts,
+    required this.ledger,
     required this.settings,
     required this.categories,
     required this.clock,
@@ -25,6 +29,8 @@ class RecordsPage extends StatefulWidget {
   });
 
   final TransactionRepository transactions;
+  final AccountRepository accounts;
+  final LedgerRepository ledger;
   final SettingsRepository settings;
   final CategoryRepository categories;
   final ApplicationClock clock;
@@ -132,16 +138,28 @@ class _RecordsPageState extends State<RecordsPage> {
                   itemCount: rows.length,
                   itemBuilder: (context, index) {
                     final row = rows[index];
-                    final record = row.transaction;
+                    final record = row.record;
                     final categoryName = row.categoryDisplayPath;
-                    final deleteLabel = record.note ?? categoryName;
+                    final deleteLabel = record.transaction.note ?? categoryName;
+                    final entry = record.entries.single;
                     return ListTile(
-                      title: Text(record.note ?? record.type.label),
-                      subtitle: Text('${record.transactionDate} $categoryName'),
+                      title: Text(
+                        record.transaction.note ??
+                            record.transaction.type.label,
+                      ),
+                      subtitle: Text(
+                        '${record.transaction.transactionDate} '
+                        '$categoryName · ${row.accountDisplayName}',
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(formatTwd(record.amountMinor)),
+                          Text(
+                            formatCurrency(
+                              entry.amountMinor.abs(),
+                              entry.currencyCode,
+                            ),
+                          ),
                           Semantics(
                             label: '刪除 $deleteLabel',
                             button: true,
@@ -166,31 +184,27 @@ class _RecordsPageState extends State<RecordsPage> {
   }
 
   Future<List<_RecordRow>> _load() async {
-    final records = await widget.transactions.list(
-      TransactionQuery(
+    final records = await widget.ledger.list(
+      LedgerQuery(
         year: _year,
         month: _month,
         type: switch (_typeFilter) {
           RecordsTypeFilter.all => null,
-          RecordsTypeFilter.income => TransactionType.income,
-          RecordsTypeFilter.expense => TransactionType.expense,
+          RecordsTypeFilter.income => LedgerTransactionType.income,
+          RecordsTypeFilter.expense => LedgerTransactionType.expense,
         },
       ),
     );
-    final sorted = records.toList()
-      ..sort((a, b) {
-        final dateComparison = b.transactionDate.compareTo(a.transactionDate);
-        if (dateComparison != 0) {
-          return dateComparison;
-        }
-        return b.createdAtUtc.compareTo(a.createdAtUtc);
-      });
     return Future.wait(
-      sorted.map((record) async {
+      records.map((record) async {
+        final categoryId = record.transaction.categoryId;
         return _RecordRow(
-          transaction: record,
-          categoryDisplayPath: await widget.categories.displayPathFor(
-            record.categoryId,
+          record: record,
+          categoryDisplayPath: categoryId == null
+              ? record.transaction.type.label
+              : await widget.categories.displayPathFor(categoryId),
+          accountDisplayName: await widget.accounts.displayNameFor(
+            record.entries.single.accountId,
           ),
         );
       }),
@@ -221,11 +235,13 @@ class _RecordsPageState extends State<RecordsPage> {
     });
   }
 
-  Future<void> _openEditForm(BookkeepingTransaction record) async {
+  Future<void> _openEditForm(LedgerRecord record) async {
     final changed = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (context) => TransactionFormPage(
           transactions: widget.transactions,
+          accounts: widget.accounts,
+          ledger: widget.ledger,
           settings: widget.settings,
           categories: widget.categories,
           clock: widget.clock,
@@ -243,7 +259,7 @@ class _RecordsPageState extends State<RecordsPage> {
     }
   }
 
-  Future<void> _confirmDelete(BookkeepingTransaction record) async {
+  Future<void> _confirmDelete(LedgerRecord record) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -265,9 +281,9 @@ class _RecordsPageState extends State<RecordsPage> {
       return;
     }
 
-    final result = await DeleteTransactionUseCase(
-      widget.transactions,
-    ).execute(DeleteTransactionRequest(id: record.id, confirmed: true));
+    final result = await DeleteLedgerRecordUseCase(widget.ledger).execute(
+      DeleteLedgerRecordCommand(id: record.transaction.id, confirmed: true),
+    );
     if (!mounted) {
       return;
     }
@@ -287,19 +303,23 @@ class _RecordsPageState extends State<RecordsPage> {
 
 class _RecordRow {
   const _RecordRow({
-    required this.transaction,
+    required this.record,
     required this.categoryDisplayPath,
+    required this.accountDisplayName,
   });
 
-  final BookkeepingTransaction transaction;
+  final LedgerRecord record;
   final String categoryDisplayPath;
+  final String accountDisplayName;
 }
 
-extension on TransactionType {
+extension on LedgerTransactionType {
   String get label {
     return switch (this) {
-      TransactionType.income => '收入',
-      TransactionType.expense => '支出',
+      LedgerTransactionType.income => '收入',
+      LedgerTransactionType.expense => '支出',
+      LedgerTransactionType.transfer => '轉帳',
+      LedgerTransactionType.openingBalance => '初始餘額',
     };
   }
 }

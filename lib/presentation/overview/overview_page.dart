@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../application/common/application_ports.dart';
-import '../../domain/model/transaction.dart';
-import '../../domain/model/transaction_type.dart';
+import '../../domain/model/currency_code.dart';
+import '../../domain/model/ledger_transaction.dart';
+import '../../domain/repository/account_repository.dart';
 import '../../domain/repository/category_repository.dart';
+import '../../domain/repository/ledger_repository.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
-import '../../domain/summary/monthly_summary.dart';
 import '../formatters/twd_formatter.dart';
 import '../transaction/transaction_form_page.dart';
 
@@ -14,6 +15,8 @@ class OverviewPage extends StatefulWidget {
   const OverviewPage({
     super.key,
     required this.transactions,
+    required this.accounts,
+    required this.ledger,
     required this.settings,
     required this.categories,
     required this.clock,
@@ -22,6 +25,8 @@ class OverviewPage extends StatefulWidget {
   });
 
   final TransactionRepository transactions;
+  final AccountRepository accounts;
+  final LedgerRepository ledger;
   final SettingsRepository settings;
   final CategoryRepository categories;
   final ApplicationClock clock;
@@ -85,7 +90,7 @@ class _OverviewPageState extends State<OverviewPage> {
             padding: const EdgeInsets.all(16),
             children: [
               Text(
-                '${data.summary.year}年${data.summary.month}月',
+                '${data.year}年${data.month}月',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 12),
@@ -93,46 +98,69 @@ class _OverviewPageState extends State<OverviewPage> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _MetricChip(
-                    label: '收入',
-                    value: formatTwd(data.summary.totalIncomeMinor),
-                  ),
-                  _MetricChip(
-                    label: '支出',
-                    value: formatTwd(data.summary.totalExpenseMinor),
-                  ),
-                  _MetricChip(
-                    label: '結餘',
-                    value: formatTwd(data.summary.balanceMinor),
-                  ),
+                  for (final MapEntry(key: currency, value: amount)
+                      in data.summary.totalIncomeMinorByCurrency.entries)
+                    _MetricChip(
+                      label: '收入',
+                      value: formatCurrency(amount, currency),
+                    ),
+                  if (data.summary.totalIncomeMinorByCurrency.isEmpty)
+                    _MetricChip(
+                      label: '收入',
+                      value: formatCurrency(0, CurrencyCode.twd),
+                    ),
+                  for (final MapEntry(key: currency, value: amount)
+                      in data.summary.totalExpenseMinorByCurrency.entries)
+                    _MetricChip(
+                      label: '支出',
+                      value: formatCurrency(amount, currency),
+                    ),
+                  if (data.summary.totalExpenseMinorByCurrency.isEmpty)
+                    _MetricChip(
+                      label: '支出',
+                      value: formatCurrency(0, CurrencyCode.twd),
+                    ),
+                  for (final MapEntry(key: currency, value: amount)
+                      in data.summary.balanceMinorByCurrency.entries)
+                    _MetricChip(
+                      label: '結餘',
+                      value: formatCurrency(amount, currency),
+                    ),
+                  if (data.summary.balanceMinorByCurrency.isEmpty)
+                    _MetricChip(
+                      label: '結餘',
+                      value: formatCurrency(0, CurrencyCode.twd),
+                    ),
                 ],
               ),
               const SizedBox(height: 24),
               Text('分類支出', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
-              if (data.summary.expenseCategoryTotals.isEmpty)
+              if (data.expenseCategoryTotals.isEmpty)
                 const Text('目前沒有記帳紀錄')
               else
-                for (final entry in data.summary.expenseCategoryTotals.entries)
+                for (final entry in data.expenseCategoryTotals.entries)
                   Text(
                     '${data.categoryDisplayPaths[entry.key] ?? entry.key} '
-                    '${formatTwd(entry.value)}',
+                    '${formatCurrency(entry.value, CurrencyCode.twd)}',
                   ),
               const SizedBox(height: 24),
               Text('最近五筆', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
-              if (data.recentTransactions.isEmpty)
+              if (data.recentRecords.isEmpty)
                 const Text('目前沒有記帳紀錄')
               else
-                for (final transaction in data.recentTransactions)
+                for (final record in data.recentRecords)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(
-                      '${data.categoryDisplayPaths[transaction.categoryId] ?? transaction.categoryId} '
-                      '${formatTwd(transaction.amountMinor)}',
+                      '${data.categoryDisplayPaths[record.transaction.categoryId] ?? record.transaction.categoryId} '
+                      '${formatCurrency(record.entries.single.amountMinor.abs(), record.entries.single.currencyCode)}',
                     ),
-                    subtitle: Text(transaction.note ?? transaction.type.label),
-                    onTap: () => _openForm(existing: transaction),
+                    subtitle: Text(
+                      record.transaction.note ?? record.transaction.type.label,
+                    ),
+                    onTap: () => _openForm(existing: record),
                   ),
             ],
           );
@@ -151,18 +179,41 @@ class _OverviewPageState extends State<OverviewPage> {
   }
 
   Future<_OverviewData> _load() async {
-    final summary = await widget.transactions.monthlySummary(
+    final summary = await widget.ledger.monthlySummary(
       year: _year,
       month: _month,
     );
-    final recent = await widget.transactions.latest(limit: 5);
+    final recent = await widget.ledger.latest(limit: 5);
+    final monthlyRecords = await widget.ledger.list(
+      LedgerQuery(year: _year, month: _month),
+    );
+    final expenseCategoryTotals = <String, int>{};
+    for (final record in monthlyRecords) {
+      if (record.transaction.type != LedgerTransactionType.expense) {
+        continue;
+      }
+      final categoryId = record.transaction.categoryId;
+      if (categoryId == null) {
+        continue;
+      }
+      expenseCategoryTotals.update(
+        categoryId,
+        (current) => current + record.entries.single.amountMinor.abs(),
+        ifAbsent: () => record.entries.single.amountMinor.abs(),
+      );
+    }
     final categoryDisplayPaths = await _displayPathsFor({
-      ...summary.expenseCategoryTotals.keys,
-      for (final transaction in recent) transaction.categoryId,
+      ...expenseCategoryTotals.keys,
+      for (final record in recent)
+        if (record.transaction.categoryId != null)
+          record.transaction.categoryId!,
     });
     return _OverviewData(
+      year: _year,
+      month: _month,
       summary: summary,
-      recentTransactions: recent,
+      expenseCategoryTotals: expenseCategoryTotals,
+      recentRecords: recent,
       categoryDisplayPaths: categoryDisplayPaths,
     );
   }
@@ -200,11 +251,13 @@ class _OverviewPageState extends State<OverviewPage> {
     });
   }
 
-  Future<void> _openForm({BookkeepingTransaction? existing}) async {
+  Future<void> _openForm({LedgerRecord? existing}) async {
     final changed = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (context) => TransactionFormPage(
           transactions: widget.transactions,
+          accounts: widget.accounts,
+          ledger: widget.ledger,
           settings: widget.settings,
           categories: widget.categories,
           clock: widget.clock,
@@ -224,13 +277,19 @@ class _OverviewPageState extends State<OverviewPage> {
 
 class _OverviewData {
   const _OverviewData({
+    required this.year,
+    required this.month,
     required this.summary,
-    required this.recentTransactions,
+    required this.expenseCategoryTotals,
+    required this.recentRecords,
     required this.categoryDisplayPaths,
   });
 
-  final MonthlySummary summary;
-  final List<BookkeepingTransaction> recentTransactions;
+  final int year;
+  final int month;
+  final CurrencyMonthlySummary summary;
+  final Map<String, int> expenseCategoryTotals;
+  final List<LedgerRecord> recentRecords;
   final Map<String, String> categoryDisplayPaths;
 }
 
@@ -246,11 +305,13 @@ class _MetricChip extends StatelessWidget {
   }
 }
 
-extension on TransactionType {
+extension on LedgerTransactionType {
   String get label {
     return switch (this) {
-      TransactionType.income => '收入',
-      TransactionType.expense => '支出',
+      LedgerTransactionType.income => '收入',
+      LedgerTransactionType.expense => '支出',
+      LedgerTransactionType.transfer => '轉帳',
+      LedgerTransactionType.openingBalance => '初始餘額',
     };
   }
 }

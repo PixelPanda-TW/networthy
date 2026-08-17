@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:networthy/domain/ledger/ledger_transaction_builder.dart';
 import 'package:networthy/domain/model/app_settings.dart';
 import 'package:networthy/domain/model/local_date.dart';
 import 'package:networthy/domain/model/transaction.dart';
@@ -24,7 +25,12 @@ void main() {
       ),
     );
 
-    await tester.pumpWidget(_app(transactions: transactions));
+    final accounts = TestAccountRepository();
+    final ledger = await _ledgerFromTransactions(transactions, accounts);
+
+    await tester.pumpWidget(
+      _app(transactions: transactions, accounts: accounts, ledger: ledger),
+    );
     await tester.pumpAndSettle();
 
     expect(find.bySemanticsLabel('新增一筆記帳'), findsOneWidget);
@@ -58,9 +64,15 @@ void main() {
   });
 }
 
-NetworthyApp _app({required TestTransactionRepository transactions}) {
+NetworthyApp _app({
+  required TestTransactionRepository transactions,
+  TestAccountRepository? accounts,
+  TestLedgerRepository? ledger,
+}) {
   return NetworthyApp(
     transactions: transactions,
+    accounts: accounts ?? TestAccountRepository(),
+    ledger: ledger ?? TestLedgerRepository(),
     settings: TestSettingsRepository(
       const AppSettings(
         onboardingCompleted: true,
@@ -76,6 +88,42 @@ NetworthyApp _app({required TestTransactionRepository transactions}) {
     authenticator: TestDeviceAuthenticator(authenticateResults: [true]),
     initialDate: DateTime(2026, 8, 16),
   );
+}
+
+Future<TestLedgerRepository> _ledgerFromTransactions(
+  TestTransactionRepository transactions,
+  TestAccountRepository accounts,
+) async {
+  final ledger = TestLedgerRepository();
+  final account = await accounts.ensureDefaultAccountSeeded();
+  for (final transaction in transactions.values.values) {
+    final entryId =
+        '${transaction.id.substring(0, transaction.id.length - 1)}a';
+    final aggregate = switch (transaction.type) {
+      TransactionType.expense => LedgerTransactionBuilder.expense(
+        transactionId: transaction.id,
+        entryId: entryId,
+        account: account,
+        amountMinor: transaction.amountMinor,
+        categoryId: transaction.categoryId,
+        transactionDate: transaction.transactionDate,
+        note: transaction.note,
+        createdAtUtc: transaction.createdAtUtc,
+      ),
+      TransactionType.income => LedgerTransactionBuilder.income(
+        transactionId: transaction.id,
+        entryId: entryId,
+        account: account,
+        amountMinor: transaction.amountMinor,
+        categoryId: transaction.categoryId,
+        transactionDate: transaction.transactionDate,
+        note: transaction.note,
+        createdAtUtc: transaction.createdAtUtc,
+      ),
+    };
+    await ledger.save(aggregate);
+  }
+  return ledger;
 }
 
 void _expectMinTouchTarget(WidgetTester tester, Finder finder) {

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:networthy/domain/ledger/ledger_transaction_builder.dart';
 import 'package:networthy/domain/model/app_settings.dart';
+import 'package:networthy/domain/model/currency_code.dart';
 import 'package:networthy/domain/model/local_date.dart';
 import 'package:networthy/domain/model/transaction.dart';
 import 'package:networthy/domain/model/transaction_type.dart';
+import 'package:networthy/domain/repository/account_repository.dart';
 import 'package:networthy/presentation/app/networthy_app.dart';
 
 import '../test_app_harness.dart';
@@ -217,16 +220,75 @@ void main() {
     expect(find.byTooltip('刪除 吃飯'), findsOneWidget);
     expect(find.textContaining('餐飲'), findsNothing);
   });
+
+  testWidgets('records show account name and hide opening balances', (
+    tester,
+  ) async {
+    final accounts = TestAccountRepository(seedDefault: false);
+    final account = await accounts.create(
+      const CreateAccountRequest(
+        id: '00000000-0000-4000-8000-000000000811',
+        name: '玉山台幣',
+        currencyCode: CurrencyCode.twd,
+        openingBalanceMinor: 0,
+      ),
+    );
+    final ledger = TestLedgerRepository();
+    await ledger.save(
+      LedgerTransactionBuilder.openingBalance(
+        transactionId: '00000000-0000-4000-8000-000000000812',
+        entryId: '00000000-0000-4000-8000-000000000813',
+        account: account,
+        amountMinor: 1000,
+        transactionDate: LocalDate(2026, 8, 1),
+        createdAtUtc: DateTime.utc(2026, 8, 1, 1),
+      ),
+    );
+    await ledger.save(
+      LedgerTransactionBuilder.expense(
+        transactionId: '00000000-0000-4000-8000-000000000814',
+        entryId: '00000000-0000-4000-8000-000000000815',
+        account: account,
+        amountMinor: 1200,
+        categoryId: 'expense.food',
+        transactionDate: LocalDate(2026, 8, 16),
+        note: '午餐',
+        createdAtUtc: DateTime.utc(2026, 8, 16, 1),
+      ),
+    );
+
+    await _pumpApp(
+      tester,
+      TestTransactionRepository(),
+      accounts: accounts,
+      ledger: ledger,
+    );
+    await tester.tap(find.text('紀錄'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('午餐'), findsOneWidget);
+    expect(find.textContaining('玉山台幣'), findsOneWidget);
+    expect(find.textContaining('餐飲'), findsOneWidget);
+    expect(find.textContaining('初始'), findsNothing);
+    expect(find.textContaining('NT\$1,000'), findsNothing);
+  });
 }
 
 Future<void> _pumpApp(
   WidgetTester tester,
   TestTransactionRepository transactions, {
   TestCategoryRepository? categories,
+  TestAccountRepository? accounts,
+  TestLedgerRepository? ledger,
 }) async {
+  final effectiveAccounts = accounts ?? TestAccountRepository();
+  final effectiveLedger =
+      ledger ?? await _ledgerFromTransactions(transactions, effectiveAccounts);
   await tester.pumpWidget(
     NetworthyApp(
       transactions: transactions,
+      accounts: effectiveAccounts,
+      ledger: effectiveLedger,
       settings: TestSettingsRepository(
         const AppSettings(
           onboardingCompleted: true,
@@ -243,6 +305,42 @@ Future<void> _pumpApp(
     ),
   );
   await tester.pumpAndSettle();
+}
+
+Future<TestLedgerRepository> _ledgerFromTransactions(
+  TestTransactionRepository transactions,
+  TestAccountRepository accounts,
+) async {
+  final ledger = TestLedgerRepository();
+  final account = await accounts.ensureDefaultAccountSeeded();
+  for (final transaction in transactions.values.values) {
+    final entryId =
+        '${transaction.id.substring(0, transaction.id.length - 1)}a';
+    final aggregate = switch (transaction.type) {
+      TransactionType.expense => LedgerTransactionBuilder.expense(
+        transactionId: transaction.id,
+        entryId: entryId,
+        account: account,
+        amountMinor: transaction.amountMinor,
+        categoryId: transaction.categoryId,
+        transactionDate: transaction.transactionDate,
+        note: transaction.note,
+        createdAtUtc: transaction.createdAtUtc,
+      ),
+      TransactionType.income => LedgerTransactionBuilder.income(
+        transactionId: transaction.id,
+        entryId: entryId,
+        account: account,
+        amountMinor: transaction.amountMinor,
+        categoryId: transaction.categoryId,
+        transactionDate: transaction.transactionDate,
+        note: transaction.note,
+        createdAtUtc: transaction.createdAtUtc,
+      ),
+    };
+    await ledger.save(aggregate);
+  }
+  return ledger;
 }
 
 BookkeepingTransaction _transaction({

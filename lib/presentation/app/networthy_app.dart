@@ -6,7 +6,9 @@ import '../../application/security/device_authenticator.dart';
 import '../../application/settings/local_data_clearer.dart';
 import '../../application/settings/onboarding_use_case.dart';
 import '../../domain/model/app_settings.dart';
+import '../../domain/repository/account_repository.dart';
 import '../../domain/repository/category_repository.dart';
+import '../../domain/repository/ledger_repository.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../home/home_shell.dart';
@@ -16,6 +18,8 @@ class NetworthyApp extends StatelessWidget {
   const NetworthyApp({
     super.key,
     required this.transactions,
+    required this.accounts,
+    required this.ledger,
     required this.settings,
     required this.categories,
     required this.clock,
@@ -26,6 +30,8 @@ class NetworthyApp extends StatelessWidget {
   });
 
   final TransactionRepository transactions;
+  final AccountRepository accounts;
+  final LedgerRepository ledger;
   final SettingsRepository settings;
   final CategoryRepository categories;
   final ApplicationClock clock;
@@ -40,6 +46,8 @@ class NetworthyApp extends StatelessWidget {
       theme: ThemeData(useMaterial3: true),
       home: _AppGate(
         transactions: transactions,
+        accounts: accounts,
+        ledger: ledger,
         settings: settings,
         categories: categories,
         clock: clock,
@@ -55,6 +63,8 @@ class NetworthyApp extends StatelessWidget {
 class _AppGate extends StatefulWidget {
   const _AppGate({
     required this.transactions,
+    required this.accounts,
+    required this.ledger,
     required this.settings,
     required this.categories,
     required this.clock,
@@ -65,6 +75,8 @@ class _AppGate extends StatefulWidget {
   });
 
   final TransactionRepository transactions;
+  final AccountRepository accounts;
+  final LedgerRepository ledger;
   final SettingsRepository settings;
   final CategoryRepository categories;
   final ApplicationClock clock;
@@ -171,6 +183,8 @@ class _AppGateState extends State<_AppGate> with WidgetsBindingObserver {
 
         return HomeShell(
           transactions: widget.transactions,
+          accounts: widget.accounts,
+          ledger: widget.ledger,
           settings: widget.settings,
           categories: widget.categories,
           clock: widget.clock,

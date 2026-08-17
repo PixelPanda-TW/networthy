@@ -69,6 +69,8 @@ void main() {
     await tester.pumpWidget(
       NetworthyApp(
         transactions: TestTransactionRepository(),
+        accounts: TestAccountRepository(),
+        ledger: TestLedgerRepository(),
         settings: _settings(lockEnabled: true),
         categories: TestCategoryRepository(),
         clock: clock,
@@ -101,6 +103,8 @@ Future<void> _pumpLockedApp(
   await tester.pumpWidget(
     NetworthyApp(
       transactions: TestTransactionRepository(),
+      accounts: TestAccountRepository(),
+      ledger: TestLedgerRepository(),
       settings: _settings(lockEnabled: lockEnabled),
       categories: TestCategoryRepository(),
       clock: TestClock(DateTime.utc(2026, 8, 16, 1)),

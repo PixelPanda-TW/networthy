@@ -15,6 +15,8 @@ void main() {
         data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
         child: NetworthyApp(
           transactions: TestTransactionRepository(),
+          accounts: TestAccountRepository(),
+          ledger: TestLedgerRepository(),
           settings: TestSettingsRepository(
             const AppSettings(
               onboardingCompleted: true,

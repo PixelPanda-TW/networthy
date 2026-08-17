@@ -6,7 +6,9 @@ import 'application/common/application_ports.dart';
 import 'application/settings/local_data_clearer.dart';
 import 'data/database/encrypted_database_opener.dart';
 import 'data/repository/clear_local_data.dart';
+import 'data/repository/drift_account_repository.dart';
 import 'data/repository/drift_category_repository.dart';
+import 'data/repository/drift_ledger_repository.dart';
 import 'data/repository/drift_settings_repository.dart';
 import 'data/repository/drift_transaction_repository.dart';
 import 'data/repository/local_data_clearer_adapter.dart';
@@ -15,6 +17,8 @@ import 'data/security/flutter_secure_storage_secret_store.dart';
 import 'domain/repository/settings_repository.dart';
 import 'domain/repository/transaction_repository.dart';
 import 'domain/repository/category_repository.dart';
+import 'domain/repository/account_repository.dart';
+import 'domain/repository/ledger_repository.dart';
 import 'platform/app_document_database_path.dart';
 import 'presentation/app/networthy_app.dart';
 
@@ -46,6 +50,8 @@ class NetworthyBootstrapApp extends StatelessWidget {
         final dependencies = snapshot.data!;
         return NetworthyApp(
           transactions: dependencies.transactions,
+          accounts: dependencies.accounts,
+          ledger: dependencies.ledger,
           settings: dependencies.settings,
           categories: dependencies.categories,
           clock: const SystemApplicationClock(),
@@ -67,8 +73,12 @@ class NetworthyBootstrapApp extends StatelessWidget {
     ).open();
     final categories = DriftCategoryRepository(database);
     await categories.ensureBuiltInCategoriesSeeded();
+    final accounts = DriftAccountRepository(database);
+    await accounts.ensureDefaultAccountSeeded();
     return _AppDependencies(
       transactions: DriftTransactionRepository(database),
+      accounts: accounts,
+      ledger: DriftLedgerRepository(database),
       settings: DriftSettingsRepository(database),
       categories: categories,
       localDataClearer: ClearLocalDataAdapter(
@@ -85,12 +95,16 @@ class NetworthyBootstrapApp extends StatelessWidget {
 class _AppDependencies {
   const _AppDependencies({
     required this.transactions,
+    required this.accounts,
+    required this.ledger,
     required this.settings,
     required this.categories,
     required this.localDataClearer,
   });
 
   final TransactionRepository transactions;
+  final AccountRepository accounts;
+  final LedgerRepository ledger;
   final SettingsRepository settings;
   final CategoryRepository categories;
   final LocalDataClearer localDataClearer;

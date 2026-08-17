@@ -4,6 +4,8 @@ import '../../application/common/application_ports.dart';
 import '../../application/security/device_authenticator.dart';
 import '../../application/settings/local_data_clearer.dart';
 import '../../domain/repository/category_repository.dart';
+import '../../domain/repository/account_repository.dart';
+import '../../domain/repository/ledger_repository.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../overview/overview_page.dart';
@@ -14,6 +16,8 @@ class HomeShell extends StatefulWidget {
   const HomeShell({
     super.key,
     required this.transactions,
+    required this.accounts,
+    required this.ledger,
     required this.settings,
     required this.categories,
     required this.clock,
@@ -25,6 +29,8 @@ class HomeShell extends StatefulWidget {
   });
 
   final TransactionRepository transactions;
+  final AccountRepository accounts;
+  final LedgerRepository ledger;
   final SettingsRepository settings;
   final CategoryRepository categories;
   final ApplicationClock clock;
@@ -48,6 +54,8 @@ class _HomeShellState extends State<HomeShell> {
       OverviewPage(
         key: ValueKey('overview-$_overviewRefreshKey'),
         transactions: widget.transactions,
+        accounts: widget.accounts,
+        ledger: widget.ledger,
         settings: widget.settings,
         categories: widget.categories,
         clock: widget.clock,
@@ -56,6 +64,8 @@ class _HomeShellState extends State<HomeShell> {
       ),
       RecordsPage(
         transactions: widget.transactions,
+        accounts: widget.accounts,
+        ledger: widget.ledger,
         settings: widget.settings,
         categories: widget.categories,
         clock: widget.clock,

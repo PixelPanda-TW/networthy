@@ -479,6 +479,9 @@ class TestAccountRepository implements AccountRepository {
 }
 
 class TestLedgerRepository implements LedgerRepository {
+  TestLedgerRepository({this.throwOnSave = false});
+
+  final bool throwOnSave;
   final Map<String, LedgerRecord> values = <String, LedgerRecord>{};
 
   @override
@@ -590,6 +593,9 @@ class TestLedgerRepository implements LedgerRepository {
 
   @override
   Future<void> save(LedgerTransactionAggregate aggregate) async {
+    if (throwOnSave) {
+      throw Exception('save failed');
+    }
     _validateAggregate(aggregate);
     values[aggregate.transaction.id] = LedgerRecord(
       transaction: aggregate.transaction,
