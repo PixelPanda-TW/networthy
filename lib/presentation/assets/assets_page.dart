@@ -5,8 +5,14 @@ import '../../application/stock/stock_account_command.dart';
 import '../../application/stock/stock_account_use_cases.dart';
 import '../../application/stock/stock_holding_command.dart';
 import '../../application/stock/stock_holding_use_cases.dart';
+import '../../application/stock/execute_stock_trade_use_case.dart';
+import '../../application/stock/stock_trade_command.dart';
+import '../../application/stock/stock_trade_history_use_case.dart';
 import '../../domain/model/stock_account.dart';
 import '../../domain/model/stock_holding.dart';
+import '../../domain/model/stock_trade.dart';
+import '../../domain/model/local_date.dart';
+import '../../domain/repository/account_repository.dart';
 import '../../domain/repository/stock_account_repository.dart';
 import '../../domain/repository/stock_holding_repository.dart';
 
@@ -15,12 +21,18 @@ class AssetsPage extends StatefulWidget {
     super.key,
     required this.accounts,
     required this.holdings,
+    this.cashAccounts,
+    this.tradeUseCase,
+    this.tradeHistory,
     required this.clock,
     required this.idGenerator,
   });
 
   final StockAccountRepository accounts;
   final StockHoldingRepository holdings;
+  final AccountRepository? cashAccounts;
+  final ExecuteStockTradeUseCase? tradeUseCase;
+  final StockTradeHistoryUseCase? tradeHistory;
   final ApplicationClock clock;
   final TransactionIdGenerator idGenerator;
 
@@ -32,6 +44,7 @@ class _AssetsPageState extends State<AssetsPage> {
   List<StockAccount> _accounts = const [];
   final Map<String, List<StockHolding>> _holdings =
       <String, List<StockHolding>>{};
+  List<StockTrade> _trades = const [];
   var _loading = true;
 
   @override
@@ -48,6 +61,7 @@ class _AssetsPageState extends State<AssetsPage> {
         account.id,
       );
     }
+    final history = await widget.tradeHistory?.latest();
     if (!mounted) {
       return;
     }
@@ -56,6 +70,7 @@ class _AssetsPageState extends State<AssetsPage> {
       _holdings
         ..clear()
         ..addAll(holdings);
+      _trades = history?.trades ?? const [];
       _loading = false;
     });
   }
@@ -81,7 +96,10 @@ class _AssetsPageState extends State<AssetsPage> {
               onRefresh: _reload,
               child: ListView(
                 padding: const EdgeInsets.all(16),
-                children: _accounts.map(_accountCard).toList(),
+                children: [
+                  ..._accounts.map(_accountCard),
+                  if (_trades.isNotEmpty) _tradeHistoryCard(),
+                ],
               ),
             ),
     );
@@ -123,6 +141,28 @@ class _AssetsPageState extends State<AssetsPage> {
               ],
             ),
             const Divider(),
+            if (widget.tradeUseCase != null) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () =>
+                          _showTradeDialog(account, StockTradeSide.buy),
+                      child: const Text('買入'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () =>
+                          _showTradeDialog(account, StockTradeSide.sell),
+                      child: const Text('賣出'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ],
             if (rows.isEmpty)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),
@@ -143,6 +183,28 @@ class _AssetsPageState extends State<AssetsPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _tradeHistoryCard() {
+    return Card(
+      child: ExpansionTile(
+        title: const Text('交易紀錄'),
+        children: _trades
+            .map(
+              (item) => ListTile(
+                title: Text(
+                  "\${item.side == StockTradeSide.buy ? '買入' : '賣出'} · "
+                  "\${item.symbol} · \${item.name}",
+                ),
+                subtitle: Text(
+                  '\${item.tradeDate} · \${item.cashAmountMinor} '
+                  '\${item.currencyCode.wireValue}',
+                ),
+              ),
+            )
+            .toList(),
       ),
     );
   }
@@ -359,6 +421,132 @@ class _AssetsPageState extends State<AssetsPage> {
             child: const Text('儲存'),
           ),
         ],
+      ),
+    );
+    if (saved == true) {
+      await _reload();
+    }
+  }
+
+  Future<void> _showTradeDialog(
+    StockAccount account,
+    StockTradeSide side,
+  ) async {
+    final available = await widget.cashAccounts?.listActive() ?? const [];
+    final compatible = available
+        .where((item) => item.currencyCode == account.currencyCode)
+        .toList();
+    if (!mounted || compatible.isEmpty || widget.tradeUseCase == null) {
+      if (mounted && compatible.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('沒有可用的同幣別現金帳戶。')));
+      }
+      return;
+    }
+    final symbol = TextEditingController();
+    final name = TextEditingController();
+    final quantity = TextEditingController();
+    final price = TextEditingController();
+    final principal = TextEditingController();
+    final note = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    var cashAccountId = compatible.first.id;
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(
+            (side == StockTradeSide.buy ? '買入 · ' : '賣出 · ') + account.name,
+          ),
+          content: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String>(
+                    initialValue: cashAccountId,
+                    decoration: const InputDecoration(labelText: '現金帳戶'),
+                    items: compatible
+                        .map(
+                          (item) => DropdownMenuItem(
+                            value: item.id,
+                            child: Text(item.name),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setDialogState(() => cashAccountId = value);
+                      }
+                    },
+                  ),
+                  _textField(symbol, '股票代號', 'trade-symbol-field'),
+                  _textField(name, '股票名稱', 'trade-name-field'),
+                  if (account.mode == StockAccountMode.taiwanStock) ...[
+                    _textField(quantity, '數量（微股）', 'trade-quantity-field'),
+                    _textField(price, '價格（分）', 'trade-price-field'),
+                  ] else
+                    _textField(
+                      principal,
+                      '本金（最小貨幣單位）',
+                      'trade-principal-field',
+                    ),
+                  TextField(
+                    controller: note,
+                    decoration: const InputDecoration(labelText: '備註（選填）'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('取消'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                if (!formKey.currentState!.validate()) {
+                  return;
+                }
+                final result = await widget.tradeUseCase!.execute(
+                  ExecuteStockTradeCommand(
+                    stockAccountId: account.id,
+                    cashAccountId: cashAccountId,
+                    side: side,
+                    symbol: symbol.text,
+                    name: name.text,
+                    accountMode: account.mode,
+                    quantityMicro: account.mode == StockAccountMode.taiwanStock
+                        ? int.tryParse(quantity.text)
+                        : null,
+                    priceMinor: account.mode == StockAccountMode.taiwanStock
+                        ? int.tryParse(price.text)
+                        : null,
+                    principalMinor: account.mode == StockAccountMode.taiwanStock
+                        ? null
+                        : int.tryParse(principal.text),
+                    tradeDate: LocalDate.fromLocalDateTime(DateTime.now()),
+                    note: note.text,
+                  ),
+                );
+                if (!dialogContext.mounted) {
+                  return;
+                }
+                if (result.failure != null) {
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    SnackBar(content: Text(result.failure!.safeMessage)),
+                  );
+                  return;
+                }
+                Navigator.pop(dialogContext, true);
+              },
+              child: const Text('儲存'),
+            ),
+          ],
+        ),
       ),
     );
     if (saved == true) {

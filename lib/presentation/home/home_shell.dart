@@ -80,6 +80,9 @@ class _HomeShellState extends State<HomeShell> {
         AssetsPage(
           accounts: widget.stockAccounts!,
           holdings: widget.stockHoldings!,
+          cashAccounts: widget.accounts,
+          tradeUseCase: widget.stockTradeUseCase,
+          tradeHistory: widget.stockTradeHistory,
           clock: widget.clock,
           idGenerator: widget.idGenerator,
         )
