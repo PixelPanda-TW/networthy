@@ -63,6 +63,7 @@ class _HomeShellState extends State<HomeShell> {
         transactions: widget.transactions,
         accounts: widget.accounts,
         ledger: widget.ledger,
+        stockHoldings: widget.stockHoldings,
         settings: widget.settings,
         categories: widget.categories,
         clock: widget.clock,

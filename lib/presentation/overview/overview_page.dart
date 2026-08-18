@@ -7,7 +7,10 @@ import '../../domain/repository/account_repository.dart';
 import '../../domain/repository/category_repository.dart';
 import '../../domain/repository/ledger_repository.dart';
 import '../../domain/repository/settings_repository.dart';
+import '../../domain/repository/stock_holding_repository.dart';
 import '../../domain/repository/transaction_repository.dart';
+import '../../domain/summary/stock_asset_summary.dart';
+import '../../application/stock/stock_summary_use_case.dart';
 import '../formatters/twd_formatter.dart';
 import '../transaction/transaction_form_page.dart';
 import '../transfer/transfer_form_page.dart';
@@ -18,6 +21,7 @@ class OverviewPage extends StatefulWidget {
     required this.transactions,
     required this.accounts,
     required this.ledger,
+    this.stockHoldings,
     required this.settings,
     required this.categories,
     required this.clock,
@@ -28,6 +32,7 @@ class OverviewPage extends StatefulWidget {
   final TransactionRepository transactions;
   final AccountRepository accounts;
   final LedgerRepository ledger;
+  final StockHoldingRepository? stockHoldings;
   final SettingsRepository settings;
   final CategoryRepository categories;
   final ApplicationClock clock;
@@ -136,6 +141,32 @@ class _OverviewPageState extends State<OverviewPage> {
                 ],
               ),
               const SizedBox(height: 24),
+              if (data.stockSummary != null &&
+                  _hasStockAssets(data.stockSummary!)) ...[
+                Text('股票資產', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                if (data.stockSummary!.taiwanStockMarketValueMinor != 0)
+                  Text(
+                    '台股個股市值 ${formatCurrency(data.stockSummary!.taiwanStockMarketValueMinor, CurrencyCode.twd)}',
+                  ),
+                if (data.stockSummary!.taiwanStockUnrealizedGainLossMinor != 0)
+                  Text(
+                    '台股個股未實現損益 ${formatCurrency(data.stockSummary!.taiwanStockUnrealizedGainLossMinor, CurrencyCode.twd)}',
+                  ),
+                if ((data.stockSummary!.principalByCurrency[CurrencyCode.twd] ??
+                        0) !=
+                    0)
+                  Text(
+                    '台股 ETF 本金 ${formatCurrency(data.stockSummary!.principalByCurrency[CurrencyCode.twd]!, CurrencyCode.twd)}',
+                  ),
+                if ((data.stockSummary!.principalByCurrency[CurrencyCode.usd] ??
+                        0) !=
+                    0)
+                  Text(
+                    '美股本金 ${formatCurrency(data.stockSummary!.principalByCurrency[CurrencyCode.usd]!, CurrencyCode.usd)}',
+                  ),
+                const SizedBox(height: 24),
+              ],
               Text('分類支出', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               if (data.expenseCategoryTotals.isEmpty)
@@ -185,6 +216,11 @@ class _OverviewPageState extends State<OverviewPage> {
       month: _month,
     );
     final recent = await widget.ledger.latest(limit: 5);
+    final stockSummary = widget.stockHoldings == null
+        ? null
+        : (await LoadStockAssetSummaryUseCase(
+            widget.stockHoldings!,
+          ).execute()).summary;
     final monthlyRecords = await widget.ledger.list(
       LedgerQuery(year: _year, month: _month),
     );
@@ -216,6 +252,7 @@ class _OverviewPageState extends State<OverviewPage> {
       expenseCategoryTotals: expenseCategoryTotals,
       recentRecords: recent,
       categoryDisplayPaths: categoryDisplayPaths,
+      stockSummary: stockSummary,
     );
   }
 
@@ -318,6 +355,7 @@ class _OverviewData {
     required this.expenseCategoryTotals,
     required this.recentRecords,
     required this.categoryDisplayPaths,
+    required this.stockSummary,
   });
 
   final int year;
@@ -326,6 +364,13 @@ class _OverviewData {
   final Map<String, int> expenseCategoryTotals;
   final List<LedgerRecord> recentRecords;
   final Map<String, String> categoryDisplayPaths;
+  final StockAssetSummary? stockSummary;
+}
+
+bool _hasStockAssets(StockAssetSummary summary) {
+  return summary.taiwanStockMarketValueMinor != 0 ||
+      summary.taiwanStockUnrealizedGainLossMinor != 0 ||
+      summary.principalByCurrency.values.any((amount) => amount != 0);
 }
 
 class _MetricChip extends StatelessWidget {
