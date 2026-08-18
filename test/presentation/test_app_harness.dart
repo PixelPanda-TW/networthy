@@ -12,7 +12,11 @@ import 'package:networthy/domain/repository/account_repository.dart';
 import 'package:networthy/domain/repository/category_repository.dart';
 import 'package:networthy/domain/repository/ledger_repository.dart';
 import 'package:networthy/domain/repository/settings_repository.dart';
+import 'package:networthy/domain/repository/stock_account_repository.dart';
+import 'package:networthy/domain/repository/stock_holding_repository.dart';
 import 'package:networthy/domain/repository/transaction_repository.dart';
+import 'package:networthy/domain/model/stock_account.dart';
+import 'package:networthy/domain/model/stock_holding.dart';
 import 'package:networthy/domain/ledger/ledger_transaction_builder.dart';
 import 'package:networthy/domain/summary/monthly_summary.dart';
 
@@ -475,6 +479,223 @@ class TestAccountRepository implements AccountRepository {
       }
       return a.name.compareTo(b.name);
     });
+  }
+}
+
+class TestStockAccountRepository implements StockAccountRepository {
+  final Map<String, StockAccount> values = <String, StockAccount>{};
+
+  @override
+  Future<void> archive(String id) async {
+    final account = values[id];
+    if (account == null) {
+      throw const StockAccountRepositoryException('股票帳戶不存在。');
+    }
+    values[id] = StockAccount.create(
+      id: account.id,
+      name: account.name,
+      mode: account.mode,
+      currencyCode: account.currencyCode,
+      isArchived: true,
+      createdAtUtc: account.createdAtUtc,
+      updatedAtUtc: DateTime.utc(2026, 8, 17),
+    );
+  }
+
+  @override
+  Future<StockAccount> create(CreateStockAccountRequest request) async {
+    if (values.containsKey(request.id)) {
+      throw const StockAccountRepositoryException('股票帳戶已存在。');
+    }
+    _ensureUniqueActiveName(name: request.name, mode: request.mode);
+    final now = DateTime.utc(2026, 8, 17);
+    final account = StockAccount.create(
+      id: request.id,
+      name: request.name,
+      mode: request.mode,
+      currencyCode: request.mode.currencyCode,
+      isArchived: false,
+      createdAtUtc: now,
+      updatedAtUtc: now,
+    );
+    values[account.id] = account;
+    return account;
+  }
+
+  @override
+  Future<StockAccount?> findById(String id) async => values[id];
+
+  @override
+  Future<List<StockAccount>> listActive() async {
+    return _sorted(values.values.where((item) => !item.isArchived));
+  }
+
+  @override
+  Future<List<StockAccount>> listAll() async {
+    return _sorted(values.values);
+  }
+
+  @override
+  Future<StockAccount> rename({
+    required String id,
+    required String name,
+  }) async {
+    final account = values[id];
+    if (account == null) {
+      throw const StockAccountRepositoryException('股票帳戶不存在。');
+    }
+    _ensureUniqueActiveName(name: name, mode: account.mode, excludingId: id);
+    final updated = StockAccount.create(
+      id: account.id,
+      name: name,
+      mode: account.mode,
+      currencyCode: account.currencyCode,
+      isArchived: account.isArchived,
+      createdAtUtc: account.createdAtUtc,
+      updatedAtUtc: DateTime.utc(2026, 8, 17),
+    );
+    values[id] = updated;
+    return updated;
+  }
+
+  void _ensureUniqueActiveName({
+    required String name,
+    required StockAccountMode mode,
+    String? excludingId,
+  }) {
+    if (values.values.any(
+      (item) =>
+          item.id != excludingId &&
+          !item.isArchived &&
+          item.mode == mode &&
+          item.name == name.trim(),
+    )) {
+      throw const StockAccountRepositoryException('同模式股票帳戶名稱已存在。');
+    }
+  }
+
+  List<StockAccount> _sorted(Iterable<StockAccount> source) {
+    final rows = source.toList();
+    rows.sort((a, b) {
+      final modeComparison = a.mode.wireValue.compareTo(b.mode.wireValue);
+      if (modeComparison != 0) {
+        return modeComparison;
+      }
+      return a.name.compareTo(b.name);
+    });
+    return rows;
+  }
+}
+
+class TestStockHoldingRepository implements StockHoldingRepository {
+  final Map<String, StockHolding> values = <String, StockHolding>{};
+
+  @override
+  Future<void> archive(String id) async {
+    final holding = values[id];
+    if (holding == null) {
+      throw const StockHoldingRepositoryException('股票持倉不存在。');
+    }
+    values[id] = _copyWithArchive(holding, true);
+  }
+
+  @override
+  Future<StockHolding?> findById(String id) async => values[id];
+
+  @override
+  Future<List<StockHolding>> listActiveByAccount(String accountId) async {
+    return _sorted(
+      values.values.where(
+        (item) => item.accountId == accountId && !item.isArchived,
+      ),
+    );
+  }
+
+  @override
+  Future<List<StockHolding>> listAllByAccount(String accountId) async {
+    return _sorted(values.values.where((item) => item.accountId == accountId));
+  }
+
+  @override
+  Future<List<StockHolding>> listAllActive() async {
+    return _sorted(values.values.where((item) => !item.isArchived));
+  }
+
+  @override
+  Future<StockHolding> savePrincipal(
+    SavePrincipalHoldingRequest request,
+  ) async {
+    final holding = StockHolding.principal(
+      id: request.id,
+      accountId: request.accountId,
+      symbol: request.symbol,
+      name: request.name,
+      accountMode: request.accountMode,
+      principalMinor: request.principalMinor,
+      isArchived: values[request.id]?.isArchived ?? false,
+      createdAtUtc:
+          values[request.id]?.createdAtUtc ?? DateTime.utc(2026, 8, 17),
+      updatedAtUtc: DateTime.utc(2026, 8, 17),
+    );
+    values[holding.id] = holding;
+    return holding;
+  }
+
+  @override
+  Future<StockHolding> saveValuation(
+    SaveValuationHoldingRequest request,
+  ) async {
+    final holding = StockHolding.valuation(
+      id: request.id,
+      accountId: request.accountId,
+      symbol: request.symbol,
+      name: request.name,
+      accountMode: request.accountMode,
+      quantityMicro: request.quantityMicro,
+      averageCostMinor: request.averageCostMinor,
+      currentPriceMinor: request.currentPriceMinor,
+      isArchived: values[request.id]?.isArchived ?? false,
+      createdAtUtc:
+          values[request.id]?.createdAtUtc ?? DateTime.utc(2026, 8, 17),
+      updatedAtUtc: DateTime.utc(2026, 8, 17),
+    );
+    values[holding.id] = holding;
+    return holding;
+  }
+
+  StockHolding _copyWithArchive(StockHolding holding, bool isArchived) {
+    if (holding.trackingMode == StockHoldingTrackingMode.valuation) {
+      return StockHolding.valuation(
+        id: holding.id,
+        accountId: holding.accountId,
+        symbol: holding.symbol,
+        name: holding.name,
+        accountMode: holding.accountMode,
+        quantityMicro: holding.quantityMicro!,
+        averageCostMinor: holding.averageCostMinor!,
+        currentPriceMinor: holding.currentPriceMinor!,
+        isArchived: isArchived,
+        createdAtUtc: holding.createdAtUtc,
+        updatedAtUtc: DateTime.utc(2026, 8, 17),
+      );
+    }
+    return StockHolding.principal(
+      id: holding.id,
+      accountId: holding.accountId,
+      symbol: holding.symbol,
+      name: holding.name,
+      accountMode: holding.accountMode,
+      principalMinor: holding.principalMinor!,
+      isArchived: isArchived,
+      createdAtUtc: holding.createdAtUtc,
+      updatedAtUtc: DateTime.utc(2026, 8, 17),
+    );
+  }
+
+  List<StockHolding> _sorted(Iterable<StockHolding> source) {
+    final rows = source.toList();
+    rows.sort((a, b) => a.symbol.compareTo(b.symbol));
+    return rows;
   }
 }
 
