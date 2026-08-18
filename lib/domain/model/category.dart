@@ -53,6 +53,11 @@ class CategoryCatalog {
           displayName: '教育',
         ),
         TransactionCategory(
+          id: 'expense.investment',
+          type: TransactionType.expense,
+          displayName: '投資',
+        ),
+        TransactionCategory(
           id: 'expense.other',
           type: TransactionType.expense,
           displayName: '其他',
