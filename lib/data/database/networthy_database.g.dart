@@ -4404,6 +4404,985 @@ class StockHoldingsCompanion extends UpdateCompanion<StockHolding> {
   }
 }
 
+class $StockTradesTable extends StockTrades
+    with TableInfo<$StockTradesTable, StockTrade> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StockTradesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _stockAccountIdMeta = const VerificationMeta(
+    'stockAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> stockAccountId = GeneratedColumn<String>(
+    'stock_account_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cashAccountIdMeta = const VerificationMeta(
+    'cashAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> cashAccountId = GeneratedColumn<String>(
+    'cash_account_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sideMeta = const VerificationMeta('side');
+  @override
+  late final GeneratedColumn<String> side = GeneratedColumn<String>(
+    'side',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _symbolMeta = const VerificationMeta('symbol');
+  @override
+  late final GeneratedColumn<String> symbol = GeneratedColumn<String>(
+    'symbol',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modeMeta = const VerificationMeta('mode');
+  @override
+  late final GeneratedColumn<String> mode = GeneratedColumn<String>(
+    'mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyCodeMeta = const VerificationMeta(
+    'currencyCode',
+  );
+  @override
+  late final GeneratedColumn<String> currencyCode = GeneratedColumn<String>(
+    'currency_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _quantityMicroMeta = const VerificationMeta(
+    'quantityMicro',
+  );
+  @override
+  late final GeneratedColumn<int> quantityMicro = GeneratedColumn<int>(
+    'quantity_micro',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _priceMinorMeta = const VerificationMeta(
+    'priceMinor',
+  );
+  @override
+  late final GeneratedColumn<int> priceMinor = GeneratedColumn<int>(
+    'price_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _principalMinorMeta = const VerificationMeta(
+    'principalMinor',
+  );
+  @override
+  late final GeneratedColumn<int> principalMinor = GeneratedColumn<int>(
+    'principal_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _tradeYearMeta = const VerificationMeta(
+    'tradeYear',
+  );
+  @override
+  late final GeneratedColumn<int> tradeYear = GeneratedColumn<int>(
+    'trade_year',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tradeMonthMeta = const VerificationMeta(
+    'tradeMonth',
+  );
+  @override
+  late final GeneratedColumn<int> tradeMonth = GeneratedColumn<int>(
+    'trade_month',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tradeDayMeta = const VerificationMeta(
+    'tradeDay',
+  );
+  @override
+  late final GeneratedColumn<int> tradeDay = GeneratedColumn<int>(
+    'trade_day',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAtUtc = GeneratedColumn<DateTime>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtUtc = GeneratedColumn<DateTime>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    stockAccountId,
+    cashAccountId,
+    side,
+    symbol,
+    name,
+    mode,
+    currencyCode,
+    quantityMicro,
+    priceMinor,
+    principalMinor,
+    tradeYear,
+    tradeMonth,
+    tradeDay,
+    note,
+    createdAtUtc,
+    updatedAtUtc,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'stock_trades';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StockTrade> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('stock_account_id')) {
+      context.handle(
+        _stockAccountIdMeta,
+        stockAccountId.isAcceptableOrUnknown(
+          data['stock_account_id']!,
+          _stockAccountIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_stockAccountIdMeta);
+    }
+    if (data.containsKey('cash_account_id')) {
+      context.handle(
+        _cashAccountIdMeta,
+        cashAccountId.isAcceptableOrUnknown(
+          data['cash_account_id']!,
+          _cashAccountIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_cashAccountIdMeta);
+    }
+    if (data.containsKey('side')) {
+      context.handle(
+        _sideMeta,
+        side.isAcceptableOrUnknown(data['side']!, _sideMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sideMeta);
+    }
+    if (data.containsKey('symbol')) {
+      context.handle(
+        _symbolMeta,
+        symbol.isAcceptableOrUnknown(data['symbol']!, _symbolMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_symbolMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('mode')) {
+      context.handle(
+        _modeMeta,
+        mode.isAcceptableOrUnknown(data['mode']!, _modeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modeMeta);
+    }
+    if (data.containsKey('currency_code')) {
+      context.handle(
+        _currencyCodeMeta,
+        currencyCode.isAcceptableOrUnknown(
+          data['currency_code']!,
+          _currencyCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyCodeMeta);
+    }
+    if (data.containsKey('quantity_micro')) {
+      context.handle(
+        _quantityMicroMeta,
+        quantityMicro.isAcceptableOrUnknown(
+          data['quantity_micro']!,
+          _quantityMicroMeta,
+        ),
+      );
+    }
+    if (data.containsKey('price_minor')) {
+      context.handle(
+        _priceMinorMeta,
+        priceMinor.isAcceptableOrUnknown(data['price_minor']!, _priceMinorMeta),
+      );
+    }
+    if (data.containsKey('principal_minor')) {
+      context.handle(
+        _principalMinorMeta,
+        principalMinor.isAcceptableOrUnknown(
+          data['principal_minor']!,
+          _principalMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('trade_year')) {
+      context.handle(
+        _tradeYearMeta,
+        tradeYear.isAcceptableOrUnknown(data['trade_year']!, _tradeYearMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tradeYearMeta);
+    }
+    if (data.containsKey('trade_month')) {
+      context.handle(
+        _tradeMonthMeta,
+        tradeMonth.isAcceptableOrUnknown(data['trade_month']!, _tradeMonthMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tradeMonthMeta);
+    }
+    if (data.containsKey('trade_day')) {
+      context.handle(
+        _tradeDayMeta,
+        tradeDay.isAcceptableOrUnknown(data['trade_day']!, _tradeDayMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tradeDayMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  StockTrade map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StockTrade(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      stockAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}stock_account_id'],
+      )!,
+      cashAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cash_account_id'],
+      )!,
+      side: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}side'],
+      )!,
+      symbol: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}symbol'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      mode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mode'],
+      )!,
+      currencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_code'],
+      )!,
+      quantityMicro: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}quantity_micro'],
+      ),
+      priceMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}price_minor'],
+      ),
+      principalMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}principal_minor'],
+      ),
+      tradeYear: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}trade_year'],
+      )!,
+      tradeMonth: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}trade_month'],
+      )!,
+      tradeDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}trade_day'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+    );
+  }
+
+  @override
+  $StockTradesTable createAlias(String alias) {
+    return $StockTradesTable(attachedDatabase, alias);
+  }
+}
+
+class StockTrade extends DataClass implements Insertable<StockTrade> {
+  final String id;
+  final String stockAccountId;
+  final String cashAccountId;
+  final String side;
+  final String symbol;
+  final String name;
+  final String mode;
+  final String currencyCode;
+  final int? quantityMicro;
+  final int? priceMinor;
+  final int? principalMinor;
+  final int tradeYear;
+  final int tradeMonth;
+  final int tradeDay;
+  final String? note;
+  final DateTime createdAtUtc;
+  final DateTime updatedAtUtc;
+  const StockTrade({
+    required this.id,
+    required this.stockAccountId,
+    required this.cashAccountId,
+    required this.side,
+    required this.symbol,
+    required this.name,
+    required this.mode,
+    required this.currencyCode,
+    this.quantityMicro,
+    this.priceMinor,
+    this.principalMinor,
+    required this.tradeYear,
+    required this.tradeMonth,
+    required this.tradeDay,
+    this.note,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['stock_account_id'] = Variable<String>(stockAccountId);
+    map['cash_account_id'] = Variable<String>(cashAccountId);
+    map['side'] = Variable<String>(side);
+    map['symbol'] = Variable<String>(symbol);
+    map['name'] = Variable<String>(name);
+    map['mode'] = Variable<String>(mode);
+    map['currency_code'] = Variable<String>(currencyCode);
+    if (!nullToAbsent || quantityMicro != null) {
+      map['quantity_micro'] = Variable<int>(quantityMicro);
+    }
+    if (!nullToAbsent || priceMinor != null) {
+      map['price_minor'] = Variable<int>(priceMinor);
+    }
+    if (!nullToAbsent || principalMinor != null) {
+      map['principal_minor'] = Variable<int>(principalMinor);
+    }
+    map['trade_year'] = Variable<int>(tradeYear);
+    map['trade_month'] = Variable<int>(tradeMonth);
+    map['trade_day'] = Variable<int>(tradeDay);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['created_at_utc'] = Variable<DateTime>(createdAtUtc);
+    map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
+    return map;
+  }
+
+  StockTradesCompanion toCompanion(bool nullToAbsent) {
+    return StockTradesCompanion(
+      id: Value(id),
+      stockAccountId: Value(stockAccountId),
+      cashAccountId: Value(cashAccountId),
+      side: Value(side),
+      symbol: Value(symbol),
+      name: Value(name),
+      mode: Value(mode),
+      currencyCode: Value(currencyCode),
+      quantityMicro: quantityMicro == null && nullToAbsent
+          ? const Value.absent()
+          : Value(quantityMicro),
+      priceMinor: priceMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(priceMinor),
+      principalMinor: principalMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(principalMinor),
+      tradeYear: Value(tradeYear),
+      tradeMonth: Value(tradeMonth),
+      tradeDay: Value(tradeDay),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+    );
+  }
+
+  factory StockTrade.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StockTrade(
+      id: serializer.fromJson<String>(json['id']),
+      stockAccountId: serializer.fromJson<String>(json['stockAccountId']),
+      cashAccountId: serializer.fromJson<String>(json['cashAccountId']),
+      side: serializer.fromJson<String>(json['side']),
+      symbol: serializer.fromJson<String>(json['symbol']),
+      name: serializer.fromJson<String>(json['name']),
+      mode: serializer.fromJson<String>(json['mode']),
+      currencyCode: serializer.fromJson<String>(json['currencyCode']),
+      quantityMicro: serializer.fromJson<int?>(json['quantityMicro']),
+      priceMinor: serializer.fromJson<int?>(json['priceMinor']),
+      principalMinor: serializer.fromJson<int?>(json['principalMinor']),
+      tradeYear: serializer.fromJson<int>(json['tradeYear']),
+      tradeMonth: serializer.fromJson<int>(json['tradeMonth']),
+      tradeDay: serializer.fromJson<int>(json['tradeDay']),
+      note: serializer.fromJson<String?>(json['note']),
+      createdAtUtc: serializer.fromJson<DateTime>(json['createdAtUtc']),
+      updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'stockAccountId': serializer.toJson<String>(stockAccountId),
+      'cashAccountId': serializer.toJson<String>(cashAccountId),
+      'side': serializer.toJson<String>(side),
+      'symbol': serializer.toJson<String>(symbol),
+      'name': serializer.toJson<String>(name),
+      'mode': serializer.toJson<String>(mode),
+      'currencyCode': serializer.toJson<String>(currencyCode),
+      'quantityMicro': serializer.toJson<int?>(quantityMicro),
+      'priceMinor': serializer.toJson<int?>(priceMinor),
+      'principalMinor': serializer.toJson<int?>(principalMinor),
+      'tradeYear': serializer.toJson<int>(tradeYear),
+      'tradeMonth': serializer.toJson<int>(tradeMonth),
+      'tradeDay': serializer.toJson<int>(tradeDay),
+      'note': serializer.toJson<String?>(note),
+      'createdAtUtc': serializer.toJson<DateTime>(createdAtUtc),
+      'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
+    };
+  }
+
+  StockTrade copyWith({
+    String? id,
+    String? stockAccountId,
+    String? cashAccountId,
+    String? side,
+    String? symbol,
+    String? name,
+    String? mode,
+    String? currencyCode,
+    Value<int?> quantityMicro = const Value.absent(),
+    Value<int?> priceMinor = const Value.absent(),
+    Value<int?> principalMinor = const Value.absent(),
+    int? tradeYear,
+    int? tradeMonth,
+    int? tradeDay,
+    Value<String?> note = const Value.absent(),
+    DateTime? createdAtUtc,
+    DateTime? updatedAtUtc,
+  }) => StockTrade(
+    id: id ?? this.id,
+    stockAccountId: stockAccountId ?? this.stockAccountId,
+    cashAccountId: cashAccountId ?? this.cashAccountId,
+    side: side ?? this.side,
+    symbol: symbol ?? this.symbol,
+    name: name ?? this.name,
+    mode: mode ?? this.mode,
+    currencyCode: currencyCode ?? this.currencyCode,
+    quantityMicro: quantityMicro.present
+        ? quantityMicro.value
+        : this.quantityMicro,
+    priceMinor: priceMinor.present ? priceMinor.value : this.priceMinor,
+    principalMinor: principalMinor.present
+        ? principalMinor.value
+        : this.principalMinor,
+    tradeYear: tradeYear ?? this.tradeYear,
+    tradeMonth: tradeMonth ?? this.tradeMonth,
+    tradeDay: tradeDay ?? this.tradeDay,
+    note: note.present ? note.value : this.note,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+  );
+  StockTrade copyWithCompanion(StockTradesCompanion data) {
+    return StockTrade(
+      id: data.id.present ? data.id.value : this.id,
+      stockAccountId: data.stockAccountId.present
+          ? data.stockAccountId.value
+          : this.stockAccountId,
+      cashAccountId: data.cashAccountId.present
+          ? data.cashAccountId.value
+          : this.cashAccountId,
+      side: data.side.present ? data.side.value : this.side,
+      symbol: data.symbol.present ? data.symbol.value : this.symbol,
+      name: data.name.present ? data.name.value : this.name,
+      mode: data.mode.present ? data.mode.value : this.mode,
+      currencyCode: data.currencyCode.present
+          ? data.currencyCode.value
+          : this.currencyCode,
+      quantityMicro: data.quantityMicro.present
+          ? data.quantityMicro.value
+          : this.quantityMicro,
+      priceMinor: data.priceMinor.present
+          ? data.priceMinor.value
+          : this.priceMinor,
+      principalMinor: data.principalMinor.present
+          ? data.principalMinor.value
+          : this.principalMinor,
+      tradeYear: data.tradeYear.present ? data.tradeYear.value : this.tradeYear,
+      tradeMonth: data.tradeMonth.present
+          ? data.tradeMonth.value
+          : this.tradeMonth,
+      tradeDay: data.tradeDay.present ? data.tradeDay.value : this.tradeDay,
+      note: data.note.present ? data.note.value : this.note,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StockTrade(')
+          ..write('id: $id, ')
+          ..write('stockAccountId: $stockAccountId, ')
+          ..write('cashAccountId: $cashAccountId, ')
+          ..write('side: $side, ')
+          ..write('symbol: $symbol, ')
+          ..write('name: $name, ')
+          ..write('mode: $mode, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('quantityMicro: $quantityMicro, ')
+          ..write('priceMinor: $priceMinor, ')
+          ..write('principalMinor: $principalMinor, ')
+          ..write('tradeYear: $tradeYear, ')
+          ..write('tradeMonth: $tradeMonth, ')
+          ..write('tradeDay: $tradeDay, ')
+          ..write('note: $note, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    stockAccountId,
+    cashAccountId,
+    side,
+    symbol,
+    name,
+    mode,
+    currencyCode,
+    quantityMicro,
+    priceMinor,
+    principalMinor,
+    tradeYear,
+    tradeMonth,
+    tradeDay,
+    note,
+    createdAtUtc,
+    updatedAtUtc,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StockTrade &&
+          other.id == this.id &&
+          other.stockAccountId == this.stockAccountId &&
+          other.cashAccountId == this.cashAccountId &&
+          other.side == this.side &&
+          other.symbol == this.symbol &&
+          other.name == this.name &&
+          other.mode == this.mode &&
+          other.currencyCode == this.currencyCode &&
+          other.quantityMicro == this.quantityMicro &&
+          other.priceMinor == this.priceMinor &&
+          other.principalMinor == this.principalMinor &&
+          other.tradeYear == this.tradeYear &&
+          other.tradeMonth == this.tradeMonth &&
+          other.tradeDay == this.tradeDay &&
+          other.note == this.note &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc);
+}
+
+class StockTradesCompanion extends UpdateCompanion<StockTrade> {
+  final Value<String> id;
+  final Value<String> stockAccountId;
+  final Value<String> cashAccountId;
+  final Value<String> side;
+  final Value<String> symbol;
+  final Value<String> name;
+  final Value<String> mode;
+  final Value<String> currencyCode;
+  final Value<int?> quantityMicro;
+  final Value<int?> priceMinor;
+  final Value<int?> principalMinor;
+  final Value<int> tradeYear;
+  final Value<int> tradeMonth;
+  final Value<int> tradeDay;
+  final Value<String?> note;
+  final Value<DateTime> createdAtUtc;
+  final Value<DateTime> updatedAtUtc;
+  final Value<int> rowid;
+  const StockTradesCompanion({
+    this.id = const Value.absent(),
+    this.stockAccountId = const Value.absent(),
+    this.cashAccountId = const Value.absent(),
+    this.side = const Value.absent(),
+    this.symbol = const Value.absent(),
+    this.name = const Value.absent(),
+    this.mode = const Value.absent(),
+    this.currencyCode = const Value.absent(),
+    this.quantityMicro = const Value.absent(),
+    this.priceMinor = const Value.absent(),
+    this.principalMinor = const Value.absent(),
+    this.tradeYear = const Value.absent(),
+    this.tradeMonth = const Value.absent(),
+    this.tradeDay = const Value.absent(),
+    this.note = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  StockTradesCompanion.insert({
+    required String id,
+    required String stockAccountId,
+    required String cashAccountId,
+    required String side,
+    required String symbol,
+    required String name,
+    required String mode,
+    required String currencyCode,
+    this.quantityMicro = const Value.absent(),
+    this.priceMinor = const Value.absent(),
+    this.principalMinor = const Value.absent(),
+    required int tradeYear,
+    required int tradeMonth,
+    required int tradeDay,
+    this.note = const Value.absent(),
+    required DateTime createdAtUtc,
+    required DateTime updatedAtUtc,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       stockAccountId = Value(stockAccountId),
+       cashAccountId = Value(cashAccountId),
+       side = Value(side),
+       symbol = Value(symbol),
+       name = Value(name),
+       mode = Value(mode),
+       currencyCode = Value(currencyCode),
+       tradeYear = Value(tradeYear),
+       tradeMonth = Value(tradeMonth),
+       tradeDay = Value(tradeDay),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc);
+  static Insertable<StockTrade> custom({
+    Expression<String>? id,
+    Expression<String>? stockAccountId,
+    Expression<String>? cashAccountId,
+    Expression<String>? side,
+    Expression<String>? symbol,
+    Expression<String>? name,
+    Expression<String>? mode,
+    Expression<String>? currencyCode,
+    Expression<int>? quantityMicro,
+    Expression<int>? priceMinor,
+    Expression<int>? principalMinor,
+    Expression<int>? tradeYear,
+    Expression<int>? tradeMonth,
+    Expression<int>? tradeDay,
+    Expression<String>? note,
+    Expression<DateTime>? createdAtUtc,
+    Expression<DateTime>? updatedAtUtc,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (stockAccountId != null) 'stock_account_id': stockAccountId,
+      if (cashAccountId != null) 'cash_account_id': cashAccountId,
+      if (side != null) 'side': side,
+      if (symbol != null) 'symbol': symbol,
+      if (name != null) 'name': name,
+      if (mode != null) 'mode': mode,
+      if (currencyCode != null) 'currency_code': currencyCode,
+      if (quantityMicro != null) 'quantity_micro': quantityMicro,
+      if (priceMinor != null) 'price_minor': priceMinor,
+      if (principalMinor != null) 'principal_minor': principalMinor,
+      if (tradeYear != null) 'trade_year': tradeYear,
+      if (tradeMonth != null) 'trade_month': tradeMonth,
+      if (tradeDay != null) 'trade_day': tradeDay,
+      if (note != null) 'note': note,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  StockTradesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? stockAccountId,
+    Value<String>? cashAccountId,
+    Value<String>? side,
+    Value<String>? symbol,
+    Value<String>? name,
+    Value<String>? mode,
+    Value<String>? currencyCode,
+    Value<int?>? quantityMicro,
+    Value<int?>? priceMinor,
+    Value<int?>? principalMinor,
+    Value<int>? tradeYear,
+    Value<int>? tradeMonth,
+    Value<int>? tradeDay,
+    Value<String?>? note,
+    Value<DateTime>? createdAtUtc,
+    Value<DateTime>? updatedAtUtc,
+    Value<int>? rowid,
+  }) {
+    return StockTradesCompanion(
+      id: id ?? this.id,
+      stockAccountId: stockAccountId ?? this.stockAccountId,
+      cashAccountId: cashAccountId ?? this.cashAccountId,
+      side: side ?? this.side,
+      symbol: symbol ?? this.symbol,
+      name: name ?? this.name,
+      mode: mode ?? this.mode,
+      currencyCode: currencyCode ?? this.currencyCode,
+      quantityMicro: quantityMicro ?? this.quantityMicro,
+      priceMinor: priceMinor ?? this.priceMinor,
+      principalMinor: principalMinor ?? this.principalMinor,
+      tradeYear: tradeYear ?? this.tradeYear,
+      tradeMonth: tradeMonth ?? this.tradeMonth,
+      tradeDay: tradeDay ?? this.tradeDay,
+      note: note ?? this.note,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (stockAccountId.present) {
+      map['stock_account_id'] = Variable<String>(stockAccountId.value);
+    }
+    if (cashAccountId.present) {
+      map['cash_account_id'] = Variable<String>(cashAccountId.value);
+    }
+    if (side.present) {
+      map['side'] = Variable<String>(side.value);
+    }
+    if (symbol.present) {
+      map['symbol'] = Variable<String>(symbol.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (mode.present) {
+      map['mode'] = Variable<String>(mode.value);
+    }
+    if (currencyCode.present) {
+      map['currency_code'] = Variable<String>(currencyCode.value);
+    }
+    if (quantityMicro.present) {
+      map['quantity_micro'] = Variable<int>(quantityMicro.value);
+    }
+    if (priceMinor.present) {
+      map['price_minor'] = Variable<int>(priceMinor.value);
+    }
+    if (principalMinor.present) {
+      map['principal_minor'] = Variable<int>(principalMinor.value);
+    }
+    if (tradeYear.present) {
+      map['trade_year'] = Variable<int>(tradeYear.value);
+    }
+    if (tradeMonth.present) {
+      map['trade_month'] = Variable<int>(tradeMonth.value);
+    }
+    if (tradeDay.present) {
+      map['trade_day'] = Variable<int>(tradeDay.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<DateTime>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StockTradesCompanion(')
+          ..write('id: $id, ')
+          ..write('stockAccountId: $stockAccountId, ')
+          ..write('cashAccountId: $cashAccountId, ')
+          ..write('side: $side, ')
+          ..write('symbol: $symbol, ')
+          ..write('name: $name, ')
+          ..write('mode: $mode, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('quantityMicro: $quantityMicro, ')
+          ..write('priceMinor: $priceMinor, ')
+          ..write('principalMinor: $principalMinor, ')
+          ..write('tradeYear: $tradeYear, ')
+          ..write('tradeMonth: $tradeMonth, ')
+          ..write('tradeDay: $tradeDay, ')
+          ..write('note: $note, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$NetworthyDatabase extends GeneratedDatabase {
   _$NetworthyDatabase(QueryExecutor e) : super(e);
   $NetworthyDatabaseManager get managers => $NetworthyDatabaseManager(this);
@@ -4418,6 +5397,7 @@ abstract class _$NetworthyDatabase extends GeneratedDatabase {
   late final $LedgerEntriesTable ledgerEntries = $LedgerEntriesTable(this);
   late final $StockAccountsTable stockAccounts = $StockAccountsTable(this);
   late final $StockHoldingsTable stockHoldings = $StockHoldingsTable(this);
+  late final $StockTradesTable stockTrades = $StockTradesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4431,6 +5411,7 @@ abstract class _$NetworthyDatabase extends GeneratedDatabase {
     ledgerEntries,
     stockAccounts,
     stockHoldings,
+    stockTrades,
   ];
 }
 
@@ -6650,6 +7631,454 @@ typedef $$StockHoldingsTableProcessedTableManager =
       StockHolding,
       PrefetchHooks Function()
     >;
+typedef $$StockTradesTableCreateCompanionBuilder =
+    StockTradesCompanion Function({
+      required String id,
+      required String stockAccountId,
+      required String cashAccountId,
+      required String side,
+      required String symbol,
+      required String name,
+      required String mode,
+      required String currencyCode,
+      Value<int?> quantityMicro,
+      Value<int?> priceMinor,
+      Value<int?> principalMinor,
+      required int tradeYear,
+      required int tradeMonth,
+      required int tradeDay,
+      Value<String?> note,
+      required DateTime createdAtUtc,
+      required DateTime updatedAtUtc,
+      Value<int> rowid,
+    });
+typedef $$StockTradesTableUpdateCompanionBuilder =
+    StockTradesCompanion Function({
+      Value<String> id,
+      Value<String> stockAccountId,
+      Value<String> cashAccountId,
+      Value<String> side,
+      Value<String> symbol,
+      Value<String> name,
+      Value<String> mode,
+      Value<String> currencyCode,
+      Value<int?> quantityMicro,
+      Value<int?> priceMinor,
+      Value<int?> principalMinor,
+      Value<int> tradeYear,
+      Value<int> tradeMonth,
+      Value<int> tradeDay,
+      Value<String?> note,
+      Value<DateTime> createdAtUtc,
+      Value<DateTime> updatedAtUtc,
+      Value<int> rowid,
+    });
+
+class $$StockTradesTableFilterComposer
+    extends Composer<_$NetworthyDatabase, $StockTradesTable> {
+  $$StockTradesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get stockAccountId => $composableBuilder(
+    column: $table.stockAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get side => $composableBuilder(
+    column: $table.side,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get symbol => $composableBuilder(
+    column: $table.symbol,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get quantityMicro => $composableBuilder(
+    column: $table.quantityMicro,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get priceMinor => $composableBuilder(
+    column: $table.priceMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get principalMinor => $composableBuilder(
+    column: $table.principalMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get tradeYear => $composableBuilder(
+    column: $table.tradeYear,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get tradeMonth => $composableBuilder(
+    column: $table.tradeMonth,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get tradeDay => $composableBuilder(
+    column: $table.tradeDay,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$StockTradesTableOrderingComposer
+    extends Composer<_$NetworthyDatabase, $StockTradesTable> {
+  $$StockTradesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get stockAccountId => $composableBuilder(
+    column: $table.stockAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get side => $composableBuilder(
+    column: $table.side,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get symbol => $composableBuilder(
+    column: $table.symbol,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get quantityMicro => $composableBuilder(
+    column: $table.quantityMicro,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get priceMinor => $composableBuilder(
+    column: $table.priceMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get principalMinor => $composableBuilder(
+    column: $table.principalMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get tradeYear => $composableBuilder(
+    column: $table.tradeYear,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get tradeMonth => $composableBuilder(
+    column: $table.tradeMonth,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get tradeDay => $composableBuilder(
+    column: $table.tradeDay,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$StockTradesTableAnnotationComposer
+    extends Composer<_$NetworthyDatabase, $StockTradesTable> {
+  $$StockTradesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get stockAccountId => $composableBuilder(
+    column: $table.stockAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get side =>
+      $composableBuilder(column: $table.side, builder: (column) => column);
+
+  GeneratedColumn<String> get symbol =>
+      $composableBuilder(column: $table.symbol, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get mode =>
+      $composableBuilder(column: $table.mode, builder: (column) => column);
+
+  GeneratedColumn<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get quantityMicro => $composableBuilder(
+    column: $table.quantityMicro,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get priceMinor => $composableBuilder(
+    column: $table.priceMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get principalMinor => $composableBuilder(
+    column: $table.principalMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get tradeYear =>
+      $composableBuilder(column: $table.tradeYear, builder: (column) => column);
+
+  GeneratedColumn<int> get tradeMonth => $composableBuilder(
+    column: $table.tradeMonth,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get tradeDay =>
+      $composableBuilder(column: $table.tradeDay, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+}
+
+class $$StockTradesTableTableManager
+    extends
+        RootTableManager<
+          _$NetworthyDatabase,
+          $StockTradesTable,
+          StockTrade,
+          $$StockTradesTableFilterComposer,
+          $$StockTradesTableOrderingComposer,
+          $$StockTradesTableAnnotationComposer,
+          $$StockTradesTableCreateCompanionBuilder,
+          $$StockTradesTableUpdateCompanionBuilder,
+          (
+            StockTrade,
+            BaseReferences<_$NetworthyDatabase, $StockTradesTable, StockTrade>,
+          ),
+          StockTrade,
+          PrefetchHooks Function()
+        > {
+  $$StockTradesTableTableManager(
+    _$NetworthyDatabase db,
+    $StockTradesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StockTradesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StockTradesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StockTradesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> stockAccountId = const Value.absent(),
+                Value<String> cashAccountId = const Value.absent(),
+                Value<String> side = const Value.absent(),
+                Value<String> symbol = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> mode = const Value.absent(),
+                Value<String> currencyCode = const Value.absent(),
+                Value<int?> quantityMicro = const Value.absent(),
+                Value<int?> priceMinor = const Value.absent(),
+                Value<int?> principalMinor = const Value.absent(),
+                Value<int> tradeYear = const Value.absent(),
+                Value<int> tradeMonth = const Value.absent(),
+                Value<int> tradeDay = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<DateTime> createdAtUtc = const Value.absent(),
+                Value<DateTime> updatedAtUtc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => StockTradesCompanion(
+                id: id,
+                stockAccountId: stockAccountId,
+                cashAccountId: cashAccountId,
+                side: side,
+                symbol: symbol,
+                name: name,
+                mode: mode,
+                currencyCode: currencyCode,
+                quantityMicro: quantityMicro,
+                priceMinor: priceMinor,
+                principalMinor: principalMinor,
+                tradeYear: tradeYear,
+                tradeMonth: tradeMonth,
+                tradeDay: tradeDay,
+                note: note,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String stockAccountId,
+                required String cashAccountId,
+                required String side,
+                required String symbol,
+                required String name,
+                required String mode,
+                required String currencyCode,
+                Value<int?> quantityMicro = const Value.absent(),
+                Value<int?> priceMinor = const Value.absent(),
+                Value<int?> principalMinor = const Value.absent(),
+                required int tradeYear,
+                required int tradeMonth,
+                required int tradeDay,
+                Value<String?> note = const Value.absent(),
+                required DateTime createdAtUtc,
+                required DateTime updatedAtUtc,
+                Value<int> rowid = const Value.absent(),
+              }) => StockTradesCompanion.insert(
+                id: id,
+                stockAccountId: stockAccountId,
+                cashAccountId: cashAccountId,
+                side: side,
+                symbol: symbol,
+                name: name,
+                mode: mode,
+                currencyCode: currencyCode,
+                quantityMicro: quantityMicro,
+                priceMinor: priceMinor,
+                principalMinor: principalMinor,
+                tradeYear: tradeYear,
+                tradeMonth: tradeMonth,
+                tradeDay: tradeDay,
+                note: note,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$StockTradesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$NetworthyDatabase,
+      $StockTradesTable,
+      StockTrade,
+      $$StockTradesTableFilterComposer,
+      $$StockTradesTableOrderingComposer,
+      $$StockTradesTableAnnotationComposer,
+      $$StockTradesTableCreateCompanionBuilder,
+      $$StockTradesTableUpdateCompanionBuilder,
+      (
+        StockTrade,
+        BaseReferences<_$NetworthyDatabase, $StockTradesTable, StockTrade>,
+      ),
+      StockTrade,
+      PrefetchHooks Function()
+    >;
 
 class $NetworthyDatabaseManager {
   final _$NetworthyDatabase _db;
@@ -6670,4 +8099,6 @@ class $NetworthyDatabaseManager {
       $$StockAccountsTableTableManager(_db, _db.stockAccounts);
   $$StockHoldingsTableTableManager get stockHoldings =>
       $$StockHoldingsTableTableManager(_db, _db.stockHoldings);
+  $$StockTradesTableTableManager get stockTrades =>
+      $$StockTradesTableTableManager(_db, _db.stockTrades);
 }

@@ -16,6 +16,25 @@ import 'package:networthy/domain/model/transaction_type.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 void main() {
+  test('schema v5 creates stock trades and preserves v4 stock tables', () async {
+    final database = NetworthyDatabase.inMemory();
+    addTearDown(database.close);
+
+    final tables = await database
+        .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
+        .get();
+
+    expect(database.schemaVersion, 5);
+    expect(
+      tables.map((row) => row.read<String>('name')),
+      contains('stock_trades'),
+    );
+    expect(
+      tables.map((row) => row.read<String>('name')),
+      contains('stock_holdings'),
+    );
+  });
+
   test(
     'migration to schema 4 creates stock tables and preserves ledger data',
     () async {

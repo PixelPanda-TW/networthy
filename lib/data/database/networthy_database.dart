@@ -117,6 +117,29 @@ class StockHoldings extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+class StockTrades extends Table {
+  TextColumn get id => text()();
+  TextColumn get stockAccountId => text()();
+  TextColumn get cashAccountId => text()();
+  TextColumn get side => text()();
+  TextColumn get symbol => text()();
+  TextColumn get name => text()();
+  TextColumn get mode => text()();
+  TextColumn get currencyCode => text()();
+  IntColumn get quantityMicro => integer().nullable()();
+  IntColumn get priceMinor => integer().nullable()();
+  IntColumn get principalMinor => integer().nullable()();
+  IntColumn get tradeYear => integer()();
+  IntColumn get tradeMonth => integer()();
+  IntColumn get tradeDay => integer()();
+  TextColumn get note => text().nullable()();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 @DriftDatabase(
   tables: [
     Transactions,
@@ -127,6 +150,7 @@ class StockHoldings extends Table {
     LedgerEntries,
     StockAccounts,
     StockHoldings,
+    StockTrades,
   ],
 )
 class NetworthyDatabase extends _$NetworthyDatabase {
@@ -135,7 +159,7 @@ class NetworthyDatabase extends _$NetworthyDatabase {
   NetworthyDatabase.inMemory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -155,6 +179,9 @@ class NetworthyDatabase extends _$NetworthyDatabase {
       if (from < 4) {
         await migrator.createTable(stockAccounts);
         await migrator.createTable(stockHoldings);
+      }
+      if (from < 5) {
+        await migrator.createTable(stockTrades);
       }
     },
   );
