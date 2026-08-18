@@ -53,6 +53,11 @@ void main() {
     expect(find.text('紀錄'), findsWidgets);
     expect(tester.takeException(), isNull);
 
+    await tester.tap(find.byTooltip('開啟資產頁'));
+    await tester.pumpAndSettle();
+    expect(find.text('資產'), findsWidgets);
+    expect(tester.takeException(), isNull);
+
     await tester.tap(find.byTooltip('開啟設定頁'));
     await tester.pumpAndSettle();
     expect(find.text('設定'), findsWidgets);

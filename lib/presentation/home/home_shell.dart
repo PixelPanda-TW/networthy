@@ -7,6 +7,9 @@ import '../../domain/repository/category_repository.dart';
 import '../../domain/repository/account_repository.dart';
 import '../../domain/repository/ledger_repository.dart';
 import '../../domain/repository/settings_repository.dart';
+import '../../domain/repository/stock_account_repository.dart';
+import '../../domain/repository/stock_holding_repository.dart';
+import '../assets/assets_page.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../overview/overview_page.dart';
 import '../records/records_page.dart';
@@ -18,6 +21,8 @@ class HomeShell extends StatefulWidget {
     required this.transactions,
     required this.accounts,
     required this.ledger,
+    this.stockAccounts,
+    this.stockHoldings,
     required this.settings,
     required this.categories,
     required this.clock,
@@ -31,6 +36,8 @@ class HomeShell extends StatefulWidget {
   final TransactionRepository transactions;
   final AccountRepository accounts;
   final LedgerRepository ledger;
+  final StockAccountRepository? stockAccounts;
+  final StockHoldingRepository? stockHoldings;
   final SettingsRepository settings;
   final CategoryRepository categories;
   final ApplicationClock clock;
@@ -62,6 +69,21 @@ class _HomeShellState extends State<HomeShell> {
         idGenerator: widget.idGenerator,
         initialDate: widget.initialDate ?? DateTime.now(),
       ),
+      if (widget.stockAccounts != null && widget.stockHoldings != null)
+        AssetsPage(
+          accounts: widget.stockAccounts!,
+          holdings: widget.stockHoldings!,
+          clock: widget.clock,
+          idGenerator: widget.idGenerator,
+        )
+      else
+        const Scaffold(
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(kToolbarHeight),
+            child: _AssetsUnavailableAppBar(),
+          ),
+          body: Center(child: Text('資產功能尚未設定')),
+        ),
       RecordsPage(
         transactions: widget.transactions,
         accounts: widget.accounts,
@@ -99,6 +121,15 @@ class _HomeShellState extends State<HomeShell> {
           const NavigationDestination(icon: Icon(Icons.pie_chart), label: '總覽'),
           NavigationDestination(
             icon: Semantics(
+              label: '開啟資產頁',
+              button: true,
+              child: Icon(Icons.business_center),
+            ),
+            label: '資產',
+            tooltip: '開啟資產頁',
+          ),
+          NavigationDestination(
+            icon: Semantics(
               label: '開啟紀錄頁',
               button: true,
               child: Icon(Icons.list),
@@ -119,4 +150,11 @@ class _HomeShellState extends State<HomeShell> {
       ),
     );
   }
+}
+
+class _AssetsUnavailableAppBar extends StatelessWidget {
+  const _AssetsUnavailableAppBar();
+
+  @override
+  Widget build(BuildContext context) => AppBar(title: const Text('資產'));
 }

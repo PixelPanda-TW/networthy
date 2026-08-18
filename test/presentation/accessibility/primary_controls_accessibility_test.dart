@@ -37,6 +37,7 @@ void main() {
     expect(find.bySemanticsLabel('切換到上一個月'), findsOneWidget);
     expect(find.bySemanticsLabel('切換到下一個月'), findsOneWidget);
     expect(find.byTooltip('開啟紀錄頁'), findsOneWidget);
+    expect(find.byTooltip('開啟資產頁'), findsOneWidget);
 
     await tester.tap(find.byTooltip('開啟紀錄頁'));
     await tester.pumpAndSettle();
@@ -60,6 +61,7 @@ void main() {
     _expectMinTouchTarget(tester, find.bySemanticsLabel('切換到上一個月'));
     _expectMinTouchTarget(tester, find.bySemanticsLabel('切換到下一個月'));
     _expectMinTouchTarget(tester, find.byTooltip('開啟紀錄頁'));
+    _expectMinTouchTarget(tester, find.byTooltip('開啟資產頁'));
     _expectMinTouchTarget(tester, find.byTooltip('開啟設定頁'));
   });
 }
