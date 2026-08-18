@@ -9,6 +9,8 @@ import '../../domain/repository/ledger_repository.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/stock_account_repository.dart';
 import '../../domain/repository/stock_holding_repository.dart';
+import '../../application/stock/execute_stock_trade_use_case.dart';
+import '../../application/stock/stock_trade_history_use_case.dart';
 import '../assets/assets_page.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../overview/overview_page.dart';
@@ -23,6 +25,8 @@ class HomeShell extends StatefulWidget {
     required this.ledger,
     this.stockAccounts,
     this.stockHoldings,
+    this.stockTradeUseCase,
+    this.stockTradeHistory,
     required this.settings,
     required this.categories,
     required this.clock,
@@ -38,6 +42,8 @@ class HomeShell extends StatefulWidget {
   final LedgerRepository ledger;
   final StockAccountRepository? stockAccounts;
   final StockHoldingRepository? stockHoldings;
+  final ExecuteStockTradeUseCase? stockTradeUseCase;
+  final StockTradeHistoryUseCase? stockTradeHistory;
   final SettingsRepository settings;
   final CategoryRepository categories;
   final ApplicationClock clock;

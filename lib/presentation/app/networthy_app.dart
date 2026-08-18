@@ -12,6 +12,8 @@ import '../../domain/repository/ledger_repository.dart';
 import '../../domain/repository/settings_repository.dart';
 import '../../domain/repository/stock_account_repository.dart';
 import '../../domain/repository/stock_holding_repository.dart';
+import '../../application/stock/execute_stock_trade_use_case.dart';
+import '../../application/stock/stock_trade_history_use_case.dart';
 import '../../domain/repository/transaction_repository.dart';
 import '../home/home_shell.dart';
 import '../security/lock_screen.dart';
@@ -24,6 +26,8 @@ class NetworthyApp extends StatelessWidget {
     required this.ledger,
     this.stockAccounts,
     this.stockHoldings,
+    this.stockTradeUseCase,
+    this.stockTradeHistory,
     required this.settings,
     required this.categories,
     required this.clock,
@@ -38,6 +42,8 @@ class NetworthyApp extends StatelessWidget {
   final LedgerRepository ledger;
   final StockAccountRepository? stockAccounts;
   final StockHoldingRepository? stockHoldings;
+  final ExecuteStockTradeUseCase? stockTradeUseCase;
+  final StockTradeHistoryUseCase? stockTradeHistory;
   final SettingsRepository settings;
   final CategoryRepository categories;
   final ApplicationClock clock;
@@ -56,6 +62,8 @@ class NetworthyApp extends StatelessWidget {
         ledger: ledger,
         stockAccounts: stockAccounts,
         stockHoldings: stockHoldings,
+        stockTradeUseCase: stockTradeUseCase,
+        stockTradeHistory: stockTradeHistory,
         settings: settings,
         categories: categories,
         clock: clock,
@@ -75,6 +83,8 @@ class _AppGate extends StatefulWidget {
     required this.ledger,
     this.stockAccounts,
     this.stockHoldings,
+    this.stockTradeUseCase,
+    this.stockTradeHistory,
     required this.settings,
     required this.categories,
     required this.clock,
@@ -89,6 +99,8 @@ class _AppGate extends StatefulWidget {
   final LedgerRepository ledger;
   final StockAccountRepository? stockAccounts;
   final StockHoldingRepository? stockHoldings;
+  final ExecuteStockTradeUseCase? stockTradeUseCase;
+  final StockTradeHistoryUseCase? stockTradeHistory;
   final SettingsRepository settings;
   final CategoryRepository categories;
   final ApplicationClock clock;
@@ -199,6 +211,8 @@ class _AppGateState extends State<_AppGate> with WidgetsBindingObserver {
           ledger: widget.ledger,
           stockAccounts: widget.stockAccounts,
           stockHoldings: widget.stockHoldings,
+          stockTradeUseCase: widget.stockTradeUseCase,
+          stockTradeHistory: widget.stockTradeHistory,
           settings: widget.settings,
           categories: widget.categories,
           clock: widget.clock,

@@ -13,6 +13,8 @@ import 'data/repository/drift_settings_repository.dart';
 import 'data/repository/drift_transaction_repository.dart';
 import 'data/repository/drift_stock_account_repository.dart';
 import 'data/repository/drift_stock_holding_repository.dart';
+import 'data/repository/drift_stock_trade_executor.dart';
+import 'data/repository/drift_stock_trade_repository.dart';
 import 'data/repository/local_data_clearer_adapter.dart';
 import 'data/security/database_key_store.dart';
 import 'data/security/flutter_secure_storage_secret_store.dart';
@@ -23,6 +25,8 @@ import 'domain/repository/account_repository.dart';
 import 'domain/repository/ledger_repository.dart';
 import 'domain/repository/stock_account_repository.dart';
 import 'domain/repository/stock_holding_repository.dart';
+import 'application/stock/execute_stock_trade_use_case.dart';
+import 'application/stock/stock_trade_history_use_case.dart';
 import 'platform/app_document_database_path.dart';
 import 'presentation/app/networthy_app.dart';
 
@@ -58,6 +62,8 @@ class NetworthyBootstrapApp extends StatelessWidget {
           ledger: dependencies.ledger,
           stockAccounts: dependencies.stockAccounts,
           stockHoldings: dependencies.stockHoldings,
+          stockTradeUseCase: dependencies.stockTradeUseCase,
+          stockTradeHistory: dependencies.stockTradeHistory,
           settings: dependencies.settings,
           categories: dependencies.categories,
           clock: const SystemApplicationClock(),
@@ -81,12 +87,25 @@ class NetworthyBootstrapApp extends StatelessWidget {
     await categories.ensureBuiltInCategoriesSeeded();
     final accounts = DriftAccountRepository(database);
     await accounts.ensureDefaultAccountSeeded();
+    final stockAccounts = DriftStockAccountRepository(database);
+    final stockHoldings = DriftStockHoldingRepository(database);
+    final stockTrades = DriftStockTradeRepository(database);
     return _AppDependencies(
       transactions: DriftTransactionRepository(database),
       accounts: accounts,
       ledger: DriftLedgerRepository(database),
-      stockAccounts: DriftStockAccountRepository(database),
-      stockHoldings: DriftStockHoldingRepository(database),
+      stockAccounts: stockAccounts,
+      stockHoldings: stockHoldings,
+      stockTradeUseCase: ExecuteStockTradeUseCase(
+        stockAccounts: stockAccounts,
+        cashAccounts: accounts,
+        holdings: stockHoldings,
+        ledger: DriftLedgerRepository(database),
+        executor: DriftStockTradeExecutor(database),
+        clock: const SystemApplicationClock(),
+        idGenerator: SecureUuidV4Generator(),
+      ),
+      stockTradeHistory: StockTradeHistoryUseCase(stockTrades),
       settings: DriftSettingsRepository(database),
       categories: categories,
       localDataClearer: ClearLocalDataAdapter(
@@ -107,6 +126,8 @@ class _AppDependencies {
     required this.ledger,
     required this.stockAccounts,
     required this.stockHoldings,
+    required this.stockTradeUseCase,
+    required this.stockTradeHistory,
     required this.settings,
     required this.categories,
     required this.localDataClearer,
@@ -117,6 +138,8 @@ class _AppDependencies {
   final LedgerRepository ledger;
   final StockAccountRepository stockAccounts;
   final StockHoldingRepository stockHoldings;
+  final ExecuteStockTradeUseCase stockTradeUseCase;
+  final StockTradeHistoryUseCase stockTradeHistory;
   final SettingsRepository settings;
   final CategoryRepository categories;
   final LocalDataClearer localDataClearer;
