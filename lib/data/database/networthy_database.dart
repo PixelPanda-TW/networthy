@@ -85,6 +85,38 @@ class LedgerEntries extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+class StockAccounts extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get mode => text()();
+  TextColumn get currencyCode => text()();
+  BoolColumn get isArchived => boolean()();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class StockHoldings extends Table {
+  TextColumn get id => text()();
+  TextColumn get accountId => text()();
+  TextColumn get symbol => text()();
+  TextColumn get name => text()();
+  TextColumn get mode => text()();
+  TextColumn get currencyCode => text()();
+  IntColumn get quantityMicro => integer().nullable()();
+  IntColumn get averageCostMinor => integer().nullable()();
+  IntColumn get currentPriceMinor => integer().nullable()();
+  IntColumn get principalMinor => integer().nullable()();
+  BoolColumn get isArchived => boolean()();
+  DateTimeColumn get createdAtUtc => dateTime()();
+  DateTimeColumn get updatedAtUtc => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 @DriftDatabase(
   tables: [
     Transactions,
@@ -93,6 +125,8 @@ class LedgerEntries extends Table {
     Accounts,
     LedgerTransactions,
     LedgerEntries,
+    StockAccounts,
+    StockHoldings,
   ],
 )
 class NetworthyDatabase extends _$NetworthyDatabase {
@@ -101,7 +135,7 @@ class NetworthyDatabase extends _$NetworthyDatabase {
   NetworthyDatabase.inMemory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -117,6 +151,10 @@ class NetworthyDatabase extends _$NetworthyDatabase {
         await migrator.createTable(ledgerTransactions);
         await migrator.createTable(ledgerEntries);
         await _migrateV2TransactionsToLedger();
+      }
+      if (from < 4) {
+        await migrator.createTable(stockAccounts);
+        await migrator.createTable(stockHoldings);
       }
     },
   );

@@ -16,6 +16,37 @@ import 'package:networthy/domain/model/transaction_type.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 void main() {
+  test(
+    'migration to schema 4 creates stock tables and preserves ledger data',
+    () async {
+      final tempDir = await Directory.systemTemp.createTemp(
+        'networthy-stock-migration-',
+      );
+      addTearDown(() => tempDir.delete(recursive: true));
+      final databaseFile = File('${tempDir.path}/networthy.db');
+      _createSchemaVersion3Database(databaseFile);
+
+      final database = NetworthyDatabase(NativeDatabase(databaseFile));
+      addTearDown(database.close);
+      final transaction = await DriftTransactionRepository(
+        database,
+      ).findById('00000000-0000-4000-8000-000000043001');
+      final tables = await database
+          .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
+          .get();
+
+      expect(transaction?.amountMinor, 888);
+      expect(
+        tables.map((row) => row.read<String>('name')),
+        contains('stock_accounts'),
+      );
+      expect(
+        tables.map((row) => row.read<String>('name')),
+        contains('stock_holdings'),
+      );
+    },
+  );
+
   test('baseline migration preserves existing schema version 1 data', () async {
     final tempDir = await Directory.systemTemp.createTemp(
       'networthy-migration-',
@@ -114,6 +145,71 @@ void main() {
       expect(expense.entries.single.amountMinor, -777);
     },
   );
+}
+
+void _createSchemaVersion3Database(File databaseFile) {
+  final database = sqlite3.open(databaseFile.path);
+  try {
+    database.execute('''
+      CREATE TABLE transactions (
+        id TEXT NOT NULL PRIMARY KEY, type TEXT NOT NULL,
+        amount_minor INTEGER NOT NULL, currency_code TEXT NOT NULL,
+        category_id TEXT NOT NULL, transaction_year INTEGER NOT NULL,
+        transaction_month INTEGER NOT NULL, transaction_day INTEGER NOT NULL,
+        note TEXT NULL, created_at_utc INTEGER NOT NULL,
+        updated_at_utc INTEGER NOT NULL
+      );
+      CREATE TABLE app_settings_rows (
+        id INTEGER NOT NULL PRIMARY KEY, onboarding_completed INTEGER NOT NULL,
+        biometric_lock_enabled INTEGER NOT NULL, currency_code TEXT NOT NULL,
+        last_expense_category_id TEXT NULL, last_income_category_id TEXT NULL
+      );
+      CREATE TABLE categories (
+        id TEXT NOT NULL PRIMARY KEY, type TEXT NOT NULL, name TEXT NOT NULL,
+        parent_id TEXT NULL, sort_order INTEGER NOT NULL,
+        is_archived INTEGER NOT NULL, created_at_utc INTEGER NOT NULL,
+        updated_at_utc INTEGER NOT NULL
+      );
+      CREATE TABLE accounts (
+        id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL,
+        currency_code TEXT NOT NULL, is_archived INTEGER NOT NULL,
+        created_at_utc INTEGER NOT NULL, updated_at_utc INTEGER NOT NULL
+      );
+      CREATE TABLE ledger_transactions (
+        id TEXT NOT NULL PRIMARY KEY, type TEXT NOT NULL,
+        category_id TEXT NULL, transaction_year INTEGER NOT NULL,
+        transaction_month INTEGER NOT NULL, transaction_day INTEGER NOT NULL,
+        note TEXT NULL, created_at_utc INTEGER NOT NULL,
+        updated_at_utc INTEGER NOT NULL
+      );
+      CREATE TABLE ledger_entries (
+        id TEXT NOT NULL PRIMARY KEY, transaction_id TEXT NOT NULL,
+        account_id TEXT NOT NULL, amount_minor INTEGER NOT NULL,
+        currency_code TEXT NOT NULL, created_at_utc INTEGER NOT NULL
+      );
+    ''');
+    database.execute(
+      '''
+      INSERT INTO transactions VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''',
+      [
+        '00000000-0000-4000-8000-000000043001',
+        'expense',
+        888,
+        'TWD',
+        'expense.food',
+        2026,
+        8,
+        18,
+        'migration',
+        DateTime.utc(2026, 8, 18, 1).millisecondsSinceEpoch,
+        DateTime.utc(2026, 8, 18, 1).millisecondsSinceEpoch,
+      ],
+    );
+    database.execute('PRAGMA user_version = 3;');
+  } finally {
+    database.close();
+  }
 }
 
 void _createSchemaVersion1Database(File databaseFile) {

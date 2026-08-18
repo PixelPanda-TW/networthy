@@ -3126,6 +3126,1284 @@ class LedgerEntriesCompanion extends UpdateCompanion<LedgerEntry> {
   }
 }
 
+class $StockAccountsTable extends StockAccounts
+    with TableInfo<$StockAccountsTable, StockAccount> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StockAccountsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modeMeta = const VerificationMeta('mode');
+  @override
+  late final GeneratedColumn<String> mode = GeneratedColumn<String>(
+    'mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyCodeMeta = const VerificationMeta(
+    'currencyCode',
+  );
+  @override
+  late final GeneratedColumn<String> currencyCode = GeneratedColumn<String>(
+    'currency_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isArchivedMeta = const VerificationMeta(
+    'isArchived',
+  );
+  @override
+  late final GeneratedColumn<bool> isArchived = GeneratedColumn<bool>(
+    'is_archived',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_archived" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAtUtc = GeneratedColumn<DateTime>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtUtc = GeneratedColumn<DateTime>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    mode,
+    currencyCode,
+    isArchived,
+    createdAtUtc,
+    updatedAtUtc,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'stock_accounts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StockAccount> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('mode')) {
+      context.handle(
+        _modeMeta,
+        mode.isAcceptableOrUnknown(data['mode']!, _modeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modeMeta);
+    }
+    if (data.containsKey('currency_code')) {
+      context.handle(
+        _currencyCodeMeta,
+        currencyCode.isAcceptableOrUnknown(
+          data['currency_code']!,
+          _currencyCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyCodeMeta);
+    }
+    if (data.containsKey('is_archived')) {
+      context.handle(
+        _isArchivedMeta,
+        isArchived.isAcceptableOrUnknown(data['is_archived']!, _isArchivedMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_isArchivedMeta);
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  StockAccount map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StockAccount(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      mode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mode'],
+      )!,
+      currencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_code'],
+      )!,
+      isArchived: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_archived'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+    );
+  }
+
+  @override
+  $StockAccountsTable createAlias(String alias) {
+    return $StockAccountsTable(attachedDatabase, alias);
+  }
+}
+
+class StockAccount extends DataClass implements Insertable<StockAccount> {
+  final String id;
+  final String name;
+  final String mode;
+  final String currencyCode;
+  final bool isArchived;
+  final DateTime createdAtUtc;
+  final DateTime updatedAtUtc;
+  const StockAccount({
+    required this.id,
+    required this.name,
+    required this.mode,
+    required this.currencyCode,
+    required this.isArchived,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['mode'] = Variable<String>(mode);
+    map['currency_code'] = Variable<String>(currencyCode);
+    map['is_archived'] = Variable<bool>(isArchived);
+    map['created_at_utc'] = Variable<DateTime>(createdAtUtc);
+    map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
+    return map;
+  }
+
+  StockAccountsCompanion toCompanion(bool nullToAbsent) {
+    return StockAccountsCompanion(
+      id: Value(id),
+      name: Value(name),
+      mode: Value(mode),
+      currencyCode: Value(currencyCode),
+      isArchived: Value(isArchived),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+    );
+  }
+
+  factory StockAccount.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StockAccount(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      mode: serializer.fromJson<String>(json['mode']),
+      currencyCode: serializer.fromJson<String>(json['currencyCode']),
+      isArchived: serializer.fromJson<bool>(json['isArchived']),
+      createdAtUtc: serializer.fromJson<DateTime>(json['createdAtUtc']),
+      updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'mode': serializer.toJson<String>(mode),
+      'currencyCode': serializer.toJson<String>(currencyCode),
+      'isArchived': serializer.toJson<bool>(isArchived),
+      'createdAtUtc': serializer.toJson<DateTime>(createdAtUtc),
+      'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
+    };
+  }
+
+  StockAccount copyWith({
+    String? id,
+    String? name,
+    String? mode,
+    String? currencyCode,
+    bool? isArchived,
+    DateTime? createdAtUtc,
+    DateTime? updatedAtUtc,
+  }) => StockAccount(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    mode: mode ?? this.mode,
+    currencyCode: currencyCode ?? this.currencyCode,
+    isArchived: isArchived ?? this.isArchived,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+  );
+  StockAccount copyWithCompanion(StockAccountsCompanion data) {
+    return StockAccount(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      mode: data.mode.present ? data.mode.value : this.mode,
+      currencyCode: data.currencyCode.present
+          ? data.currencyCode.value
+          : this.currencyCode,
+      isArchived: data.isArchived.present
+          ? data.isArchived.value
+          : this.isArchived,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StockAccount(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('mode: $mode, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('isArchived: $isArchived, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    mode,
+    currencyCode,
+    isArchived,
+    createdAtUtc,
+    updatedAtUtc,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StockAccount &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.mode == this.mode &&
+          other.currencyCode == this.currencyCode &&
+          other.isArchived == this.isArchived &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc);
+}
+
+class StockAccountsCompanion extends UpdateCompanion<StockAccount> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> mode;
+  final Value<String> currencyCode;
+  final Value<bool> isArchived;
+  final Value<DateTime> createdAtUtc;
+  final Value<DateTime> updatedAtUtc;
+  final Value<int> rowid;
+  const StockAccountsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.mode = const Value.absent(),
+    this.currencyCode = const Value.absent(),
+    this.isArchived = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  StockAccountsCompanion.insert({
+    required String id,
+    required String name,
+    required String mode,
+    required String currencyCode,
+    required bool isArchived,
+    required DateTime createdAtUtc,
+    required DateTime updatedAtUtc,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       mode = Value(mode),
+       currencyCode = Value(currencyCode),
+       isArchived = Value(isArchived),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc);
+  static Insertable<StockAccount> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? mode,
+    Expression<String>? currencyCode,
+    Expression<bool>? isArchived,
+    Expression<DateTime>? createdAtUtc,
+    Expression<DateTime>? updatedAtUtc,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (mode != null) 'mode': mode,
+      if (currencyCode != null) 'currency_code': currencyCode,
+      if (isArchived != null) 'is_archived': isArchived,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  StockAccountsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? mode,
+    Value<String>? currencyCode,
+    Value<bool>? isArchived,
+    Value<DateTime>? createdAtUtc,
+    Value<DateTime>? updatedAtUtc,
+    Value<int>? rowid,
+  }) {
+    return StockAccountsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      mode: mode ?? this.mode,
+      currencyCode: currencyCode ?? this.currencyCode,
+      isArchived: isArchived ?? this.isArchived,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (mode.present) {
+      map['mode'] = Variable<String>(mode.value);
+    }
+    if (currencyCode.present) {
+      map['currency_code'] = Variable<String>(currencyCode.value);
+    }
+    if (isArchived.present) {
+      map['is_archived'] = Variable<bool>(isArchived.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<DateTime>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StockAccountsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('mode: $mode, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('isArchived: $isArchived, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $StockHoldingsTable extends StockHoldings
+    with TableInfo<$StockHoldingsTable, StockHolding> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StockHoldingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _accountIdMeta = const VerificationMeta(
+    'accountId',
+  );
+  @override
+  late final GeneratedColumn<String> accountId = GeneratedColumn<String>(
+    'account_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _symbolMeta = const VerificationMeta('symbol');
+  @override
+  late final GeneratedColumn<String> symbol = GeneratedColumn<String>(
+    'symbol',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modeMeta = const VerificationMeta('mode');
+  @override
+  late final GeneratedColumn<String> mode = GeneratedColumn<String>(
+    'mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyCodeMeta = const VerificationMeta(
+    'currencyCode',
+  );
+  @override
+  late final GeneratedColumn<String> currencyCode = GeneratedColumn<String>(
+    'currency_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _quantityMicroMeta = const VerificationMeta(
+    'quantityMicro',
+  );
+  @override
+  late final GeneratedColumn<int> quantityMicro = GeneratedColumn<int>(
+    'quantity_micro',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _averageCostMinorMeta = const VerificationMeta(
+    'averageCostMinor',
+  );
+  @override
+  late final GeneratedColumn<int> averageCostMinor = GeneratedColumn<int>(
+    'average_cost_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _currentPriceMinorMeta = const VerificationMeta(
+    'currentPriceMinor',
+  );
+  @override
+  late final GeneratedColumn<int> currentPriceMinor = GeneratedColumn<int>(
+    'current_price_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _principalMinorMeta = const VerificationMeta(
+    'principalMinor',
+  );
+  @override
+  late final GeneratedColumn<int> principalMinor = GeneratedColumn<int>(
+    'principal_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isArchivedMeta = const VerificationMeta(
+    'isArchived',
+  );
+  @override
+  late final GeneratedColumn<bool> isArchived = GeneratedColumn<bool>(
+    'is_archived',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_archived" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAtUtc = GeneratedColumn<DateTime>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtUtc = GeneratedColumn<DateTime>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    accountId,
+    symbol,
+    name,
+    mode,
+    currencyCode,
+    quantityMicro,
+    averageCostMinor,
+    currentPriceMinor,
+    principalMinor,
+    isArchived,
+    createdAtUtc,
+    updatedAtUtc,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'stock_holdings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StockHolding> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('account_id')) {
+      context.handle(
+        _accountIdMeta,
+        accountId.isAcceptableOrUnknown(data['account_id']!, _accountIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_accountIdMeta);
+    }
+    if (data.containsKey('symbol')) {
+      context.handle(
+        _symbolMeta,
+        symbol.isAcceptableOrUnknown(data['symbol']!, _symbolMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_symbolMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('mode')) {
+      context.handle(
+        _modeMeta,
+        mode.isAcceptableOrUnknown(data['mode']!, _modeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modeMeta);
+    }
+    if (data.containsKey('currency_code')) {
+      context.handle(
+        _currencyCodeMeta,
+        currencyCode.isAcceptableOrUnknown(
+          data['currency_code']!,
+          _currencyCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyCodeMeta);
+    }
+    if (data.containsKey('quantity_micro')) {
+      context.handle(
+        _quantityMicroMeta,
+        quantityMicro.isAcceptableOrUnknown(
+          data['quantity_micro']!,
+          _quantityMicroMeta,
+        ),
+      );
+    }
+    if (data.containsKey('average_cost_minor')) {
+      context.handle(
+        _averageCostMinorMeta,
+        averageCostMinor.isAcceptableOrUnknown(
+          data['average_cost_minor']!,
+          _averageCostMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('current_price_minor')) {
+      context.handle(
+        _currentPriceMinorMeta,
+        currentPriceMinor.isAcceptableOrUnknown(
+          data['current_price_minor']!,
+          _currentPriceMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('principal_minor')) {
+      context.handle(
+        _principalMinorMeta,
+        principalMinor.isAcceptableOrUnknown(
+          data['principal_minor']!,
+          _principalMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_archived')) {
+      context.handle(
+        _isArchivedMeta,
+        isArchived.isAcceptableOrUnknown(data['is_archived']!, _isArchivedMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_isArchivedMeta);
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  StockHolding map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StockHolding(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      accountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}account_id'],
+      )!,
+      symbol: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}symbol'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      mode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mode'],
+      )!,
+      currencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_code'],
+      )!,
+      quantityMicro: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}quantity_micro'],
+      ),
+      averageCostMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}average_cost_minor'],
+      ),
+      currentPriceMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}current_price_minor'],
+      ),
+      principalMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}principal_minor'],
+      ),
+      isArchived: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_archived'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+    );
+  }
+
+  @override
+  $StockHoldingsTable createAlias(String alias) {
+    return $StockHoldingsTable(attachedDatabase, alias);
+  }
+}
+
+class StockHolding extends DataClass implements Insertable<StockHolding> {
+  final String id;
+  final String accountId;
+  final String symbol;
+  final String name;
+  final String mode;
+  final String currencyCode;
+  final int? quantityMicro;
+  final int? averageCostMinor;
+  final int? currentPriceMinor;
+  final int? principalMinor;
+  final bool isArchived;
+  final DateTime createdAtUtc;
+  final DateTime updatedAtUtc;
+  const StockHolding({
+    required this.id,
+    required this.accountId,
+    required this.symbol,
+    required this.name,
+    required this.mode,
+    required this.currencyCode,
+    this.quantityMicro,
+    this.averageCostMinor,
+    this.currentPriceMinor,
+    this.principalMinor,
+    required this.isArchived,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['account_id'] = Variable<String>(accountId);
+    map['symbol'] = Variable<String>(symbol);
+    map['name'] = Variable<String>(name);
+    map['mode'] = Variable<String>(mode);
+    map['currency_code'] = Variable<String>(currencyCode);
+    if (!nullToAbsent || quantityMicro != null) {
+      map['quantity_micro'] = Variable<int>(quantityMicro);
+    }
+    if (!nullToAbsent || averageCostMinor != null) {
+      map['average_cost_minor'] = Variable<int>(averageCostMinor);
+    }
+    if (!nullToAbsent || currentPriceMinor != null) {
+      map['current_price_minor'] = Variable<int>(currentPriceMinor);
+    }
+    if (!nullToAbsent || principalMinor != null) {
+      map['principal_minor'] = Variable<int>(principalMinor);
+    }
+    map['is_archived'] = Variable<bool>(isArchived);
+    map['created_at_utc'] = Variable<DateTime>(createdAtUtc);
+    map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
+    return map;
+  }
+
+  StockHoldingsCompanion toCompanion(bool nullToAbsent) {
+    return StockHoldingsCompanion(
+      id: Value(id),
+      accountId: Value(accountId),
+      symbol: Value(symbol),
+      name: Value(name),
+      mode: Value(mode),
+      currencyCode: Value(currencyCode),
+      quantityMicro: quantityMicro == null && nullToAbsent
+          ? const Value.absent()
+          : Value(quantityMicro),
+      averageCostMinor: averageCostMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(averageCostMinor),
+      currentPriceMinor: currentPriceMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(currentPriceMinor),
+      principalMinor: principalMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(principalMinor),
+      isArchived: Value(isArchived),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+    );
+  }
+
+  factory StockHolding.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StockHolding(
+      id: serializer.fromJson<String>(json['id']),
+      accountId: serializer.fromJson<String>(json['accountId']),
+      symbol: serializer.fromJson<String>(json['symbol']),
+      name: serializer.fromJson<String>(json['name']),
+      mode: serializer.fromJson<String>(json['mode']),
+      currencyCode: serializer.fromJson<String>(json['currencyCode']),
+      quantityMicro: serializer.fromJson<int?>(json['quantityMicro']),
+      averageCostMinor: serializer.fromJson<int?>(json['averageCostMinor']),
+      currentPriceMinor: serializer.fromJson<int?>(json['currentPriceMinor']),
+      principalMinor: serializer.fromJson<int?>(json['principalMinor']),
+      isArchived: serializer.fromJson<bool>(json['isArchived']),
+      createdAtUtc: serializer.fromJson<DateTime>(json['createdAtUtc']),
+      updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'accountId': serializer.toJson<String>(accountId),
+      'symbol': serializer.toJson<String>(symbol),
+      'name': serializer.toJson<String>(name),
+      'mode': serializer.toJson<String>(mode),
+      'currencyCode': serializer.toJson<String>(currencyCode),
+      'quantityMicro': serializer.toJson<int?>(quantityMicro),
+      'averageCostMinor': serializer.toJson<int?>(averageCostMinor),
+      'currentPriceMinor': serializer.toJson<int?>(currentPriceMinor),
+      'principalMinor': serializer.toJson<int?>(principalMinor),
+      'isArchived': serializer.toJson<bool>(isArchived),
+      'createdAtUtc': serializer.toJson<DateTime>(createdAtUtc),
+      'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
+    };
+  }
+
+  StockHolding copyWith({
+    String? id,
+    String? accountId,
+    String? symbol,
+    String? name,
+    String? mode,
+    String? currencyCode,
+    Value<int?> quantityMicro = const Value.absent(),
+    Value<int?> averageCostMinor = const Value.absent(),
+    Value<int?> currentPriceMinor = const Value.absent(),
+    Value<int?> principalMinor = const Value.absent(),
+    bool? isArchived,
+    DateTime? createdAtUtc,
+    DateTime? updatedAtUtc,
+  }) => StockHolding(
+    id: id ?? this.id,
+    accountId: accountId ?? this.accountId,
+    symbol: symbol ?? this.symbol,
+    name: name ?? this.name,
+    mode: mode ?? this.mode,
+    currencyCode: currencyCode ?? this.currencyCode,
+    quantityMicro: quantityMicro.present
+        ? quantityMicro.value
+        : this.quantityMicro,
+    averageCostMinor: averageCostMinor.present
+        ? averageCostMinor.value
+        : this.averageCostMinor,
+    currentPriceMinor: currentPriceMinor.present
+        ? currentPriceMinor.value
+        : this.currentPriceMinor,
+    principalMinor: principalMinor.present
+        ? principalMinor.value
+        : this.principalMinor,
+    isArchived: isArchived ?? this.isArchived,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+  );
+  StockHolding copyWithCompanion(StockHoldingsCompanion data) {
+    return StockHolding(
+      id: data.id.present ? data.id.value : this.id,
+      accountId: data.accountId.present ? data.accountId.value : this.accountId,
+      symbol: data.symbol.present ? data.symbol.value : this.symbol,
+      name: data.name.present ? data.name.value : this.name,
+      mode: data.mode.present ? data.mode.value : this.mode,
+      currencyCode: data.currencyCode.present
+          ? data.currencyCode.value
+          : this.currencyCode,
+      quantityMicro: data.quantityMicro.present
+          ? data.quantityMicro.value
+          : this.quantityMicro,
+      averageCostMinor: data.averageCostMinor.present
+          ? data.averageCostMinor.value
+          : this.averageCostMinor,
+      currentPriceMinor: data.currentPriceMinor.present
+          ? data.currentPriceMinor.value
+          : this.currentPriceMinor,
+      principalMinor: data.principalMinor.present
+          ? data.principalMinor.value
+          : this.principalMinor,
+      isArchived: data.isArchived.present
+          ? data.isArchived.value
+          : this.isArchived,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StockHolding(')
+          ..write('id: $id, ')
+          ..write('accountId: $accountId, ')
+          ..write('symbol: $symbol, ')
+          ..write('name: $name, ')
+          ..write('mode: $mode, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('quantityMicro: $quantityMicro, ')
+          ..write('averageCostMinor: $averageCostMinor, ')
+          ..write('currentPriceMinor: $currentPriceMinor, ')
+          ..write('principalMinor: $principalMinor, ')
+          ..write('isArchived: $isArchived, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    accountId,
+    symbol,
+    name,
+    mode,
+    currencyCode,
+    quantityMicro,
+    averageCostMinor,
+    currentPriceMinor,
+    principalMinor,
+    isArchived,
+    createdAtUtc,
+    updatedAtUtc,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StockHolding &&
+          other.id == this.id &&
+          other.accountId == this.accountId &&
+          other.symbol == this.symbol &&
+          other.name == this.name &&
+          other.mode == this.mode &&
+          other.currencyCode == this.currencyCode &&
+          other.quantityMicro == this.quantityMicro &&
+          other.averageCostMinor == this.averageCostMinor &&
+          other.currentPriceMinor == this.currentPriceMinor &&
+          other.principalMinor == this.principalMinor &&
+          other.isArchived == this.isArchived &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc);
+}
+
+class StockHoldingsCompanion extends UpdateCompanion<StockHolding> {
+  final Value<String> id;
+  final Value<String> accountId;
+  final Value<String> symbol;
+  final Value<String> name;
+  final Value<String> mode;
+  final Value<String> currencyCode;
+  final Value<int?> quantityMicro;
+  final Value<int?> averageCostMinor;
+  final Value<int?> currentPriceMinor;
+  final Value<int?> principalMinor;
+  final Value<bool> isArchived;
+  final Value<DateTime> createdAtUtc;
+  final Value<DateTime> updatedAtUtc;
+  final Value<int> rowid;
+  const StockHoldingsCompanion({
+    this.id = const Value.absent(),
+    this.accountId = const Value.absent(),
+    this.symbol = const Value.absent(),
+    this.name = const Value.absent(),
+    this.mode = const Value.absent(),
+    this.currencyCode = const Value.absent(),
+    this.quantityMicro = const Value.absent(),
+    this.averageCostMinor = const Value.absent(),
+    this.currentPriceMinor = const Value.absent(),
+    this.principalMinor = const Value.absent(),
+    this.isArchived = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  StockHoldingsCompanion.insert({
+    required String id,
+    required String accountId,
+    required String symbol,
+    required String name,
+    required String mode,
+    required String currencyCode,
+    this.quantityMicro = const Value.absent(),
+    this.averageCostMinor = const Value.absent(),
+    this.currentPriceMinor = const Value.absent(),
+    this.principalMinor = const Value.absent(),
+    required bool isArchived,
+    required DateTime createdAtUtc,
+    required DateTime updatedAtUtc,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       accountId = Value(accountId),
+       symbol = Value(symbol),
+       name = Value(name),
+       mode = Value(mode),
+       currencyCode = Value(currencyCode),
+       isArchived = Value(isArchived),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc);
+  static Insertable<StockHolding> custom({
+    Expression<String>? id,
+    Expression<String>? accountId,
+    Expression<String>? symbol,
+    Expression<String>? name,
+    Expression<String>? mode,
+    Expression<String>? currencyCode,
+    Expression<int>? quantityMicro,
+    Expression<int>? averageCostMinor,
+    Expression<int>? currentPriceMinor,
+    Expression<int>? principalMinor,
+    Expression<bool>? isArchived,
+    Expression<DateTime>? createdAtUtc,
+    Expression<DateTime>? updatedAtUtc,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (accountId != null) 'account_id': accountId,
+      if (symbol != null) 'symbol': symbol,
+      if (name != null) 'name': name,
+      if (mode != null) 'mode': mode,
+      if (currencyCode != null) 'currency_code': currencyCode,
+      if (quantityMicro != null) 'quantity_micro': quantityMicro,
+      if (averageCostMinor != null) 'average_cost_minor': averageCostMinor,
+      if (currentPriceMinor != null) 'current_price_minor': currentPriceMinor,
+      if (principalMinor != null) 'principal_minor': principalMinor,
+      if (isArchived != null) 'is_archived': isArchived,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  StockHoldingsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? accountId,
+    Value<String>? symbol,
+    Value<String>? name,
+    Value<String>? mode,
+    Value<String>? currencyCode,
+    Value<int?>? quantityMicro,
+    Value<int?>? averageCostMinor,
+    Value<int?>? currentPriceMinor,
+    Value<int?>? principalMinor,
+    Value<bool>? isArchived,
+    Value<DateTime>? createdAtUtc,
+    Value<DateTime>? updatedAtUtc,
+    Value<int>? rowid,
+  }) {
+    return StockHoldingsCompanion(
+      id: id ?? this.id,
+      accountId: accountId ?? this.accountId,
+      symbol: symbol ?? this.symbol,
+      name: name ?? this.name,
+      mode: mode ?? this.mode,
+      currencyCode: currencyCode ?? this.currencyCode,
+      quantityMicro: quantityMicro ?? this.quantityMicro,
+      averageCostMinor: averageCostMinor ?? this.averageCostMinor,
+      currentPriceMinor: currentPriceMinor ?? this.currentPriceMinor,
+      principalMinor: principalMinor ?? this.principalMinor,
+      isArchived: isArchived ?? this.isArchived,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (accountId.present) {
+      map['account_id'] = Variable<String>(accountId.value);
+    }
+    if (symbol.present) {
+      map['symbol'] = Variable<String>(symbol.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (mode.present) {
+      map['mode'] = Variable<String>(mode.value);
+    }
+    if (currencyCode.present) {
+      map['currency_code'] = Variable<String>(currencyCode.value);
+    }
+    if (quantityMicro.present) {
+      map['quantity_micro'] = Variable<int>(quantityMicro.value);
+    }
+    if (averageCostMinor.present) {
+      map['average_cost_minor'] = Variable<int>(averageCostMinor.value);
+    }
+    if (currentPriceMinor.present) {
+      map['current_price_minor'] = Variable<int>(currentPriceMinor.value);
+    }
+    if (principalMinor.present) {
+      map['principal_minor'] = Variable<int>(principalMinor.value);
+    }
+    if (isArchived.present) {
+      map['is_archived'] = Variable<bool>(isArchived.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<DateTime>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StockHoldingsCompanion(')
+          ..write('id: $id, ')
+          ..write('accountId: $accountId, ')
+          ..write('symbol: $symbol, ')
+          ..write('name: $name, ')
+          ..write('mode: $mode, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('quantityMicro: $quantityMicro, ')
+          ..write('averageCostMinor: $averageCostMinor, ')
+          ..write('currentPriceMinor: $currentPriceMinor, ')
+          ..write('principalMinor: $principalMinor, ')
+          ..write('isArchived: $isArchived, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$NetworthyDatabase extends GeneratedDatabase {
   _$NetworthyDatabase(QueryExecutor e) : super(e);
   $NetworthyDatabaseManager get managers => $NetworthyDatabaseManager(this);
@@ -3138,6 +4416,8 @@ abstract class _$NetworthyDatabase extends GeneratedDatabase {
   late final $LedgerTransactionsTable ledgerTransactions =
       $LedgerTransactionsTable(this);
   late final $LedgerEntriesTable ledgerEntries = $LedgerEntriesTable(this);
+  late final $StockAccountsTable stockAccounts = $StockAccountsTable(this);
+  late final $StockHoldingsTable stockHoldings = $StockHoldingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3149,6 +4429,8 @@ abstract class _$NetworthyDatabase extends GeneratedDatabase {
     accounts,
     ledgerTransactions,
     ledgerEntries,
+    stockAccounts,
+    stockHoldings,
   ];
 }
 
@@ -4742,6 +6024,632 @@ typedef $$LedgerEntriesTableProcessedTableManager =
       LedgerEntry,
       PrefetchHooks Function()
     >;
+typedef $$StockAccountsTableCreateCompanionBuilder =
+    StockAccountsCompanion Function({
+      required String id,
+      required String name,
+      required String mode,
+      required String currencyCode,
+      required bool isArchived,
+      required DateTime createdAtUtc,
+      required DateTime updatedAtUtc,
+      Value<int> rowid,
+    });
+typedef $$StockAccountsTableUpdateCompanionBuilder =
+    StockAccountsCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> mode,
+      Value<String> currencyCode,
+      Value<bool> isArchived,
+      Value<DateTime> createdAtUtc,
+      Value<DateTime> updatedAtUtc,
+      Value<int> rowid,
+    });
+
+class $$StockAccountsTableFilterComposer
+    extends Composer<_$NetworthyDatabase, $StockAccountsTable> {
+  $$StockAccountsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isArchived => $composableBuilder(
+    column: $table.isArchived,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$StockAccountsTableOrderingComposer
+    extends Composer<_$NetworthyDatabase, $StockAccountsTable> {
+  $$StockAccountsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isArchived => $composableBuilder(
+    column: $table.isArchived,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$StockAccountsTableAnnotationComposer
+    extends Composer<_$NetworthyDatabase, $StockAccountsTable> {
+  $$StockAccountsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get mode =>
+      $composableBuilder(column: $table.mode, builder: (column) => column);
+
+  GeneratedColumn<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isArchived => $composableBuilder(
+    column: $table.isArchived,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+}
+
+class $$StockAccountsTableTableManager
+    extends
+        RootTableManager<
+          _$NetworthyDatabase,
+          $StockAccountsTable,
+          StockAccount,
+          $$StockAccountsTableFilterComposer,
+          $$StockAccountsTableOrderingComposer,
+          $$StockAccountsTableAnnotationComposer,
+          $$StockAccountsTableCreateCompanionBuilder,
+          $$StockAccountsTableUpdateCompanionBuilder,
+          (
+            StockAccount,
+            BaseReferences<
+              _$NetworthyDatabase,
+              $StockAccountsTable,
+              StockAccount
+            >,
+          ),
+          StockAccount,
+          PrefetchHooks Function()
+        > {
+  $$StockAccountsTableTableManager(
+    _$NetworthyDatabase db,
+    $StockAccountsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StockAccountsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StockAccountsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StockAccountsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> mode = const Value.absent(),
+                Value<String> currencyCode = const Value.absent(),
+                Value<bool> isArchived = const Value.absent(),
+                Value<DateTime> createdAtUtc = const Value.absent(),
+                Value<DateTime> updatedAtUtc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => StockAccountsCompanion(
+                id: id,
+                name: name,
+                mode: mode,
+                currencyCode: currencyCode,
+                isArchived: isArchived,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String mode,
+                required String currencyCode,
+                required bool isArchived,
+                required DateTime createdAtUtc,
+                required DateTime updatedAtUtc,
+                Value<int> rowid = const Value.absent(),
+              }) => StockAccountsCompanion.insert(
+                id: id,
+                name: name,
+                mode: mode,
+                currencyCode: currencyCode,
+                isArchived: isArchived,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$StockAccountsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$NetworthyDatabase,
+      $StockAccountsTable,
+      StockAccount,
+      $$StockAccountsTableFilterComposer,
+      $$StockAccountsTableOrderingComposer,
+      $$StockAccountsTableAnnotationComposer,
+      $$StockAccountsTableCreateCompanionBuilder,
+      $$StockAccountsTableUpdateCompanionBuilder,
+      (
+        StockAccount,
+        BaseReferences<_$NetworthyDatabase, $StockAccountsTable, StockAccount>,
+      ),
+      StockAccount,
+      PrefetchHooks Function()
+    >;
+typedef $$StockHoldingsTableCreateCompanionBuilder =
+    StockHoldingsCompanion Function({
+      required String id,
+      required String accountId,
+      required String symbol,
+      required String name,
+      required String mode,
+      required String currencyCode,
+      Value<int?> quantityMicro,
+      Value<int?> averageCostMinor,
+      Value<int?> currentPriceMinor,
+      Value<int?> principalMinor,
+      required bool isArchived,
+      required DateTime createdAtUtc,
+      required DateTime updatedAtUtc,
+      Value<int> rowid,
+    });
+typedef $$StockHoldingsTableUpdateCompanionBuilder =
+    StockHoldingsCompanion Function({
+      Value<String> id,
+      Value<String> accountId,
+      Value<String> symbol,
+      Value<String> name,
+      Value<String> mode,
+      Value<String> currencyCode,
+      Value<int?> quantityMicro,
+      Value<int?> averageCostMinor,
+      Value<int?> currentPriceMinor,
+      Value<int?> principalMinor,
+      Value<bool> isArchived,
+      Value<DateTime> createdAtUtc,
+      Value<DateTime> updatedAtUtc,
+      Value<int> rowid,
+    });
+
+class $$StockHoldingsTableFilterComposer
+    extends Composer<_$NetworthyDatabase, $StockHoldingsTable> {
+  $$StockHoldingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get accountId => $composableBuilder(
+    column: $table.accountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get symbol => $composableBuilder(
+    column: $table.symbol,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get quantityMicro => $composableBuilder(
+    column: $table.quantityMicro,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get averageCostMinor => $composableBuilder(
+    column: $table.averageCostMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get currentPriceMinor => $composableBuilder(
+    column: $table.currentPriceMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get principalMinor => $composableBuilder(
+    column: $table.principalMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isArchived => $composableBuilder(
+    column: $table.isArchived,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$StockHoldingsTableOrderingComposer
+    extends Composer<_$NetworthyDatabase, $StockHoldingsTable> {
+  $$StockHoldingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get accountId => $composableBuilder(
+    column: $table.accountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get symbol => $composableBuilder(
+    column: $table.symbol,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get quantityMicro => $composableBuilder(
+    column: $table.quantityMicro,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get averageCostMinor => $composableBuilder(
+    column: $table.averageCostMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get currentPriceMinor => $composableBuilder(
+    column: $table.currentPriceMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get principalMinor => $composableBuilder(
+    column: $table.principalMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isArchived => $composableBuilder(
+    column: $table.isArchived,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$StockHoldingsTableAnnotationComposer
+    extends Composer<_$NetworthyDatabase, $StockHoldingsTable> {
+  $$StockHoldingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get accountId =>
+      $composableBuilder(column: $table.accountId, builder: (column) => column);
+
+  GeneratedColumn<String> get symbol =>
+      $composableBuilder(column: $table.symbol, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get mode =>
+      $composableBuilder(column: $table.mode, builder: (column) => column);
+
+  GeneratedColumn<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get quantityMicro => $composableBuilder(
+    column: $table.quantityMicro,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get averageCostMinor => $composableBuilder(
+    column: $table.averageCostMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get currentPriceMinor => $composableBuilder(
+    column: $table.currentPriceMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get principalMinor => $composableBuilder(
+    column: $table.principalMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isArchived => $composableBuilder(
+    column: $table.isArchived,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+}
+
+class $$StockHoldingsTableTableManager
+    extends
+        RootTableManager<
+          _$NetworthyDatabase,
+          $StockHoldingsTable,
+          StockHolding,
+          $$StockHoldingsTableFilterComposer,
+          $$StockHoldingsTableOrderingComposer,
+          $$StockHoldingsTableAnnotationComposer,
+          $$StockHoldingsTableCreateCompanionBuilder,
+          $$StockHoldingsTableUpdateCompanionBuilder,
+          (
+            StockHolding,
+            BaseReferences<
+              _$NetworthyDatabase,
+              $StockHoldingsTable,
+              StockHolding
+            >,
+          ),
+          StockHolding,
+          PrefetchHooks Function()
+        > {
+  $$StockHoldingsTableTableManager(
+    _$NetworthyDatabase db,
+    $StockHoldingsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StockHoldingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StockHoldingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StockHoldingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> accountId = const Value.absent(),
+                Value<String> symbol = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> mode = const Value.absent(),
+                Value<String> currencyCode = const Value.absent(),
+                Value<int?> quantityMicro = const Value.absent(),
+                Value<int?> averageCostMinor = const Value.absent(),
+                Value<int?> currentPriceMinor = const Value.absent(),
+                Value<int?> principalMinor = const Value.absent(),
+                Value<bool> isArchived = const Value.absent(),
+                Value<DateTime> createdAtUtc = const Value.absent(),
+                Value<DateTime> updatedAtUtc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => StockHoldingsCompanion(
+                id: id,
+                accountId: accountId,
+                symbol: symbol,
+                name: name,
+                mode: mode,
+                currencyCode: currencyCode,
+                quantityMicro: quantityMicro,
+                averageCostMinor: averageCostMinor,
+                currentPriceMinor: currentPriceMinor,
+                principalMinor: principalMinor,
+                isArchived: isArchived,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String accountId,
+                required String symbol,
+                required String name,
+                required String mode,
+                required String currencyCode,
+                Value<int?> quantityMicro = const Value.absent(),
+                Value<int?> averageCostMinor = const Value.absent(),
+                Value<int?> currentPriceMinor = const Value.absent(),
+                Value<int?> principalMinor = const Value.absent(),
+                required bool isArchived,
+                required DateTime createdAtUtc,
+                required DateTime updatedAtUtc,
+                Value<int> rowid = const Value.absent(),
+              }) => StockHoldingsCompanion.insert(
+                id: id,
+                accountId: accountId,
+                symbol: symbol,
+                name: name,
+                mode: mode,
+                currencyCode: currencyCode,
+                quantityMicro: quantityMicro,
+                averageCostMinor: averageCostMinor,
+                currentPriceMinor: currentPriceMinor,
+                principalMinor: principalMinor,
+                isArchived: isArchived,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$StockHoldingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$NetworthyDatabase,
+      $StockHoldingsTable,
+      StockHolding,
+      $$StockHoldingsTableFilterComposer,
+      $$StockHoldingsTableOrderingComposer,
+      $$StockHoldingsTableAnnotationComposer,
+      $$StockHoldingsTableCreateCompanionBuilder,
+      $$StockHoldingsTableUpdateCompanionBuilder,
+      (
+        StockHolding,
+        BaseReferences<_$NetworthyDatabase, $StockHoldingsTable, StockHolding>,
+      ),
+      StockHolding,
+      PrefetchHooks Function()
+    >;
 
 class $NetworthyDatabaseManager {
   final _$NetworthyDatabase _db;
@@ -4758,4 +6666,8 @@ class $NetworthyDatabaseManager {
       $$LedgerTransactionsTableTableManager(_db, _db.ledgerTransactions);
   $$LedgerEntriesTableTableManager get ledgerEntries =>
       $$LedgerEntriesTableTableManager(_db, _db.ledgerEntries);
+  $$StockAccountsTableTableManager get stockAccounts =>
+      $$StockAccountsTableTableManager(_db, _db.stockAccounts);
+  $$StockHoldingsTableTableManager get stockHoldings =>
+      $$StockHoldingsTableTableManager(_db, _db.stockHoldings);
 }
