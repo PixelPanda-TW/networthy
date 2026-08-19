@@ -14,6 +14,7 @@ void main() {
         'expense.entertainment',
         'expense.medical',
         'expense.education',
+        'expense.investment',
         'expense.other',
       ],
     );
